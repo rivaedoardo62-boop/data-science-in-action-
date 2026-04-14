@@ -1,41 +1,101 @@
-# Jakala – Customer Segmentation Project
+# Jakala × LUISS — Customer Segmentation Project
 
-Analisi di segmentazione clienti sviluppata nell'ambito del progetto Jakala / LUISS.
+Segmentazione della customer base di un fashion retailer italiano tramite
+tecniche avanzate di ML non supervisionato (UMAP + Gaussian Mixture Model).
+Progetto sviluppato per il corso Data Science in Action — LUISS / JAKALA.
 
-## Obiettivo
+---
 
-Pulire, integrare e analizzare dati di clienti, prodotti e transazioni per identificare cluster di clienti significativi tramite tecniche di machine learning non supervisionato.
+## Dataset
+
+- **21,477 clienti** · **24 mesi** di dati transazionali (Mar 2023 – Feb 2025)
+- **€11.96M** di revenue osservata · **6 segmenti** identificati
+- I file CSV sono esclusi dal tracking git (`.gitignore`). Copiare `master_transactions.csv` nella root prima di eseguire il notebook principale.
+
+---
 
 ## Struttura del repository
 
 ```
-project jakala/
+Idea-Factory/
+├── jakala_segmentation_advanced.ipynb  ← NOTEBOOK PRINCIPALE (pipeline completa)
 ├── src/
-│   ├── cleaning_data.ipynb   # Pulizia e preprocessing dei dati
-│   └── clusters.ipynb        # Clustering e analisi dei segmenti
+│   ├── cleaning_data.ipynb             # Fase esplorativa: pulizia e EDA iniziale
+│   ├── clusters.ipynb                  # Fase esplorativa: test algoritmi (KMeans, DBSCAN…)
+│   ├── data_processing.py              # Funzioni di supporto: caricamento e feature engineering
+│   └── clustering_model.py             # Funzioni di supporto: scaling, fitting, valutazione
+├── models/                             # Cartella per la persistenza dei modelli addestrati
 ├── docs/
-│   └── Jakala_LUISS.pdf      # Brief e documentazione del progetto
-├── ROW DATA/                 # Dati grezzi originali (gitignored)
-├── MERGERED DATA/            # Dati integrati (gitignored)
-└── io/                       # Dataset aziendali (gitignored)
+│   └── Jakala_LUISS.pdf                # Brief originale del progetto
+├── customer_segmentation_results.csv   # Output finale: cluster assegnati per cliente
+├── jakala_project_pipeline.svg         # Diagramma della pipeline end-to-end
+├── strategic_action_plan_v2.html       # CEO Briefing: strategia e ROI per segmento
+└── requirements.txt                    # Dipendenze Python
 ```
 
-## Come eseguire i notebook
+---
 
-1. Assicurarsi di avere Python 3 e Jupyter installati:
-   ```bash
-   pip install jupyter pandas numpy scikit-learn matplotlib seaborn
-   ```
+## Come eseguire il progetto
 
-2. Avviare Jupyter:
-   ```bash
-   jupyter notebook
-   ```
+### Setup
 
-3. Eseguire i notebook nell'ordine:
-   - Prima `src/cleaning_data.ipynb` — produce i dati puliti
-   - Poi `src/clusters.ipynb` — esegue il clustering sui dati puliti
+```bash
+pip install -r requirements.txt
+```
 
-## Note
+### Notebook principale (pipeline completa CRISP-DM)
 
-I file di dati (CSV, TXT, XLSX) sono esclusi dal tracking git tramite `.gitignore`. Inserire i dataset nella cartella `io/` prima di eseguire i notebook.
+```bash
+jupyter notebook jakala_segmentation_advanced.ipynb
+```
+
+Eseguire le celle in ordine. Il notebook è **self-contained**: include tutte le fasi
+dalla pulizia dati all'output finale senza dipendenze esterne.
+
+**Struttura interna del notebook (7 fasi):**
+
+| Fase | Contenuto |
+|------|-----------|
+| 1 | Data Preparation & Quality (parsing date, NA, one-timer flag) |
+| 2 | EDA Avanzata (stagionalità, Pareto 80/20, funnel email, bivariata) |
+| 3 | Feature Engineering (RFM, discount propensity, email engagement, resi) |
+| 4 | Dimensionality Reduction con UMAP (2D + 3D, RobustScaler) |
+| 5 | Clustering: DBSCAN (outlier isolation) + GMM (K ottimale via BIC) |
+| 6 | Profiling & Business Strategy (naming, radar chart, VIP index geografico) |
+| 7 | Financial Modeling (CLV, Revenue at Risk, ROI per strategia, CEO P&L table) |
+
+### Notebook esplorativi (src/)
+
+Contengono la fase di ricerca e sperimentazione, eseguiti **prima** del notebook principale:
+
+1. `src/cleaning_data.ipynb` — pulizia dati, gestione NA, feature iniziali
+2. `src/clusters.ipynb` — test comparativo KMeans / DBSCAN / OPTICS / GMM / HC
+
+> **Nota:** questi notebook richiedono i dati in `io/` o nella root. I percorsi
+> sono configurabili nella prima cella di ciascun notebook.
+
+---
+
+## Output
+
+| File | Descrizione |
+|------|-------------|
+| `customer_segmentation_results.csv` | 21,477 righe: cluster_gmm, cluster_name, cluster_confidence, KPI comportamentali |
+| `strategic_action_plan_v2.html` | Documento CEO con strategia e ROI per tutti e 6 i segmenti |
+| `jakala_project_pipeline.svg` | Diagramma visivo della pipeline |
+
+---
+
+## Dipendenze principali
+
+| Libreria | Versione minima | Utilizzo |
+|----------|:--------------:|---------|
+| pandas | 2.0.0 | Data manipulation |
+| scikit-learn | 1.3.0 | Preprocessing, GMM, metriche |
+| umap-learn | 0.5.5 | Dimensionality reduction |
+| plotly | 5.15.0 | Radar chart, scatter interattivi |
+| seaborn / matplotlib | 0.12 / 3.7 | Visualizzazioni statiche |
+
+```bash
+pip install -r requirements.txt
+```
