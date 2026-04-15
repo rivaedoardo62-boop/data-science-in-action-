@@ -18,18 +18,30 @@ Progetto sviluppato per il corso Data Science in Action — LUISS / JAKALA.
 
 ```
 Idea-Factory/
+│
+│  ── NOTEBOOK ──────────────────────────────────────────────────────────────
 ├── jakala_segmentation_advanced.ipynb  ← NOTEBOOK PRINCIPALE (pipeline completa)
 ├── src/
 │   ├── cleaning_data.ipynb             # Fase esplorativa: pulizia e EDA iniziale
 │   ├── clusters.ipynb                  # Fase esplorativa: test algoritmi (KMeans, DBSCAN…)
 │   ├── data_processing.py              # Funzioni di supporto: caricamento e feature engineering
 │   └── clustering_model.py             # Funzioni di supporto: scaling, fitting, valutazione
-├── models/                             # Cartella per la persistenza dei modelli addestrati
+│
+│  ── IMMAGINI ──────────────────────────────────────────────────────────────
+├── assets/
+│   ├── jakala_project_pipeline.svg     # Diagramma pipeline end-to-end
+│   ├── clv_analysis.png                # CLV per segmento (Fase 7)
+│   ├── revenue_at_risk.png             # Scenario analysis churn (Fase 7)
+│   ├── roi_framework.png               # ROI per strategia (Fase 7)
+│   ├── ceo_pnl_heatmap.png             # CEO P&L table (Fase 7)
+│   └── eda_*.png                       # Grafici EDA (Fase 2)
+│
+│  ── OUTPUT & DOCS ─────────────────────────────────────────────────────────
+├── customer_segmentation_results.csv   # 21,477 clienti: cluster assegnati + KPI
+├── strategic_action_plan_v2.html       # CEO Briefing: strategia e ROI per segmento
+├── models/                             # Modelli addestrati (pickle)
 ├── docs/
 │   └── Jakala_LUISS.pdf                # Brief originale del progetto
-├── customer_segmentation_results.csv   # Output finale: cluster assegnati per cliente
-├── jakala_project_pipeline.svg         # Diagramma della pipeline end-to-end
-├── strategic_action_plan_v2.html       # CEO Briefing: strategia e ROI per segmento
 └── requirements.txt                    # Dipendenze Python
 ```
 
@@ -82,7 +94,10 @@ Contengono la fase di ricerca e sperimentazione, eseguiti **prima** del notebook
 |------|-------------|
 | `customer_segmentation_results.csv` | 21,477 righe: cluster_gmm, cluster_name, cluster_confidence, KPI comportamentali |
 | `strategic_action_plan_v2.html` | Documento CEO con strategia e ROI per tutti e 6 i segmenti |
-| `jakala_project_pipeline.svg` | Diagramma visivo della pipeline |
+| `assets/jakala_project_pipeline.svg` | Diagramma visivo della pipeline |
+| `assets/clv_analysis.png` | CLV per segmento |
+| `assets/revenue_at_risk.png` | Revenue at Risk — scenario analysis |
+| `assets/ceo_pnl_heatmap.png` | CEO P&L heatmap |
 
 ---
 
