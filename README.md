@@ -1,53 +1,53 @@
 # Jakala × LUISS — Customer Segmentation Project
 
-Segmentazione della customer base di un fashion retailer italiano tramite
-tecniche avanzate di ML non supervisionato (UMAP + Gaussian Mixture Model).
-Progetto sviluppato per il corso Data Science in Action — LUISS / JAKALA.
+Customer base segmentation for an Italian fashion retailer using advanced
+unsupervised ML techniques (UMAP + Gaussian Mixture Model).
+Developed for the Data Science in Action course — LUISS / JAKALA.
 
 ---
 
 ## Dataset
 
-- **21,477 clienti** · **24 mesi** di dati transazionali (Mar 2023 – Feb 2025)
-- **€11.96M** di revenue osservata · **6 segmenti** identificati
-- I file CSV sono esclusi dal tracking git (`.gitignore`). Copiare `master_transactions.csv` nella root prima di eseguire il notebook principale.
+- **21,477 customers** · **24 months** of transactional data (Mar 2023 – Feb 2025)
+- **€11.96M** observed revenue · **6 segments** identified
+- CSV files are excluded from git tracking (`.gitignore`). Copy `master_transactions.csv` to the root before running the main notebook.
 
 ---
 
-## Struttura del repository
+## Repository Structure
 
 ```
 Idea-Factory/
 │
-│  ── NOTEBOOK ──────────────────────────────────────────────────────────────
-├── jakala_segmentation_advanced.ipynb  ← NOTEBOOK PRINCIPALE (pipeline completa)
+│  ── NOTEBOOKS ─────────────────────────────────────────────────────────────
+├── jakala_segmentation_advanced.ipynb  ← MAIN NOTEBOOK (full pipeline)
 ├── src/
-│   ├── cleaning_data.ipynb             # Fase esplorativa: pulizia e EDA iniziale
-│   ├── clusters.ipynb                  # Fase esplorativa: test algoritmi (KMeans, DBSCAN…)
-│   ├── data_processing.py              # Funzioni di supporto: caricamento e feature engineering
-│   └── clustering_model.py             # Funzioni di supporto: scaling, fitting, valutazione
+│   ├── cleaning_data.ipynb             # Exploratory: data cleaning and initial EDA
+│   ├── clusters.ipynb                  # Exploratory: algorithm comparison (KMeans, DBSCAN…)
+│   ├── data_processing.py              # Support functions: loading and feature engineering
+│   └── clustering_model.py             # Support functions: scaling, fitting, evaluation
 │
-│  ── IMMAGINI ──────────────────────────────────────────────────────────────
+│  ── IMAGES ──────────────────────────────────────────────────────────────
 ├── assets/
-│   ├── jakala_project_pipeline.svg     # Diagramma pipeline end-to-end
-│   ├── clv_analysis.png                # CLV per segmento (Fase 7)
-│   ├── revenue_at_risk.png             # Scenario analysis churn (Fase 7)
-│   ├── roi_framework.png               # ROI per strategia (Fase 7)
-│   ├── ceo_pnl_heatmap.png             # CEO P&L table (Fase 7)
-│   └── eda_*.png                       # Grafici EDA (Fase 2)
+│   ├── jakala_project_pipeline.svg     # End-to-end pipeline diagram
+│   ├── clv_analysis.png                # CLV by segment (Phase 7)
+│   ├── revenue_at_risk.png             # Churn scenario analysis (Phase 7)
+│   ├── roi_framework.png               # ROI by strategy (Phase 7)
+│   ├── ceo_pnl_heatmap.png             # CEO P&L table (Phase 7)
+│   └── eda_*.png                       # EDA charts (Phase 2)
 │
 │  ── OUTPUT & DOCS ─────────────────────────────────────────────────────────
-├── customer_segmentation_results.csv   # 21,477 clienti: cluster assegnati + KPI
-├── strategic_action_plan_v2.html       # CEO Briefing: strategia e ROI per segmento
-├── models/                             # Modelli addestrati (pickle)
+├── customer_segmentation_results.csv   # 21,477 customers: assigned clusters + KPIs
+├── presentation_finale.html            # CEO Briefing: strategy and ROI per segment
+├── models/                             # Trained models (pickle)
 ├── docs/
-│   └── Jakala_LUISS.pdf                # Brief originale del progetto
-└── requirements.txt                    # Dipendenze Python
+│   └── Jakala_LUISS.pdf                # Original project brief
+└── requirements.txt                    # Python dependencies
 ```
 
 ---
 
-## Come eseguire il progetto
+## How to Run
 
 ### Setup
 
@@ -55,61 +55,76 @@ Idea-Factory/
 pip install -r requirements.txt
 ```
 
-### Notebook principale (pipeline completa CRISP-DM)
+### Main Notebook (full CRISP-DM pipeline)
 
 ```bash
 jupyter notebook jakala_segmentation_advanced.ipynb
 ```
 
-Eseguire le celle in ordine. Il notebook è **self-contained**: include tutte le fasi
-dalla pulizia dati all'output finale senza dipendenze esterne.
+Run cells in order. The notebook is **self-contained**: it includes all phases
+from data cleaning to final output with no external dependencies.
 
-**Struttura interna del notebook (7 fasi):**
+**Internal notebook structure (7 phases):**
 
-| Fase | Contenuto |
-|------|-----------|
-| 1 | Data Preparation & Quality (parsing date, NA, one-timer flag) |
-| 2 | EDA Avanzata (stagionalità, Pareto 80/20, funnel email, bivariata) |
-| 3 | Feature Engineering (RFM, discount propensity, email engagement, resi) |
-| 4 | Dimensionality Reduction con UMAP (2D + 3D, RobustScaler) |
-| 5 | Clustering: DBSCAN (outlier isolation) + GMM (K ottimale via BIC) |
-| 6 | Profiling & Business Strategy (naming, radar chart, VIP index geografico) |
-| 7 | Financial Modeling (CLV, Revenue at Risk, ROI per strategia, CEO P&L table) |
+| Phase | Content |
+|-------|---------|
+| 1 | Data Preparation & Quality (date parsing, NA handling, one-timer flag) |
+| 2 | Advanced EDA (seasonality, Pareto 80/20, email funnel, bivariate analysis) |
+| 3 | Feature Engineering (RFM, discount propensity, email engagement, returns) |
+| 4 | Dimensionality Reduction with UMAP (2D + 3D, RobustScaler) |
+| 5 | Clustering: DBSCAN (outlier isolation) + GMM (optimal K via BIC) |
+| 6 | Profiling & Business Strategy (naming, radar chart, geographic VIP index) |
+| 7 | Financial Modeling (CLV, Revenue at Risk, ROI per strategy, CEO P&L table) |
 
-### Notebook esplorativi (src/)
+### Exploratory Notebooks (src/)
 
-Contengono la fase di ricerca e sperimentazione, eseguiti **prima** del notebook principale:
+Contain the research and experimentation phase, run **before** the main notebook:
 
-1. `src/cleaning_data.ipynb` — pulizia dati, gestione NA, feature iniziali
-2. `src/clusters.ipynb` — test comparativo KMeans / DBSCAN / OPTICS / GMM / HC
+1. `src/cleaning_data.ipynb` — data cleaning, NA handling, initial features
+2. `src/clusters.ipynb` — comparative test: KMeans / DBSCAN / OPTICS / GMM / HC
 
-> **Nota:** questi notebook richiedono i dati in `io/` o nella root. I percorsi
-> sono configurabili nella prima cella di ciascun notebook.
+> **Note:** these notebooks require the data in `io/` or in the root. Paths
+> are configurable in the first cell of each notebook.
 
 ---
 
 ## Output
 
-| File | Descrizione |
+| File | Description |
 |------|-------------|
-| `customer_segmentation_results.csv` | 21,477 righe: cluster_gmm, cluster_name, cluster_confidence, KPI comportamentali |
-| `strategic_action_plan_v2.html` | Documento CEO con strategia e ROI per tutti e 6 i segmenti |
-| `assets/jakala_project_pipeline.svg` | Diagramma visivo della pipeline |
-| `assets/clv_analysis.png` | CLV per segmento |
+| `customer_segmentation_results.csv` | 21,477 rows: cluster_gmm, cluster_name, cluster_confidence, behavioral KPIs |
+| `presentation_finale.html` | CEO document with strategy and ROI for all 6 segments |
+| `assets/jakala_project_pipeline.svg` | Visual pipeline diagram |
+| `assets/clv_analysis.png` | CLV by segment |
 | `assets/revenue_at_risk.png` | Revenue at Risk — scenario analysis |
 | `assets/ceo_pnl_heatmap.png` | CEO P&L heatmap |
 
 ---
 
-## Dipendenze principali
+## 6 Customer Segments
 
-| Libreria | Versione minima | Utilizzo |
-|----------|:--------------:|---------|
+| Segment | Size | Description |
+|---------|------|-------------|
+| 💎 The Inner Circle | ~8% | High-value VIPs — frequent, high AOV, low discount dependency |
+| 🔄 Quality Seekers | ~12% | High return rate (33%) — fit issues, need size tools |
+| 🛍️ Style Explorers | ~18% | Multi-category browsers — upsell and bundle opportunity |
+| 🏷️ Deal Chasers | ~22% | Discount-driven — protect margin, manage channel profitability |
+| 🌱 Rising Stars | ~15% | Growing mid-tier — nurture toward VIP status |
+| 👋 Dormant Potential | ~25% | One-timers and low-engagement — reactivation campaigns |
+
+> **Cluster -1** (1 customer) is a statistical outlier isolated by DBSCAN — not a targetable segment.
+
+---
+
+## Key Dependencies
+
+| Library | Min Version | Usage |
+|---------|:-----------:|-------|
 | pandas | 2.0.0 | Data manipulation |
-| scikit-learn | 1.3.0 | Preprocessing, GMM, metriche |
+| scikit-learn | 1.3.0 | Preprocessing, GMM, metrics |
 | umap-learn | 0.5.5 | Dimensionality reduction |
-| plotly | 5.15.0 | Radar chart, scatter interattivi |
-| seaborn / matplotlib | 0.12 / 3.7 | Visualizzazioni statiche |
+| plotly | 5.15.0 | Radar chart, interactive scatter |
+| seaborn / matplotlib | 0.12 / 3.7 | Static visualizations |
 
 ```bash
 pip install -r requirements.txt
