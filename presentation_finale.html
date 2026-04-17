@@ -1,264 +1,227 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Customer Segmentation — JAKALA × LUISS</title>
 <style>
   :root {
-    --black:   #0D0D0D;
-    --white:   #FFFFFF;
-    --grey:    #F5F5F5;
-    --mid:     #6B7280;
-    --border:  #E5E7EB;
-    --c1: #1A1A2E;   /* Inner Circle — navy */
-    --c2: #8B5E3C;   /* Brand Devotees — warm brown */
-    --c3: #2D6A4F;   /* Style Explorers — forest green */
-    --c4: #C0392B;   /* Deal Chasers — red */
-    --c5: #5B4FCF;   /* Rising Stars — indigo */
-    --c6: #6B7280;   /* Silent Departures — grey */
+    --black:  #0D0D0D;
+    --white:  #FFFFFF;
+    --grey:   #F5F5F5;
+    --mid:    #6B7280;
+    --border: #E5E7EB;
+    --c1: #1A1A2E;
+    --c2: #7C3AED;
+    --c3: #2D6A4F;
+    --c4: #B45309;
+    --c5: #1D4ED8;
+    --c6: #6B7280;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--grey); color: var(--black); }
 
-  /* ── NAV ── */
   nav {
     position: sticky; top: 0; z-index: 100;
     background: var(--black); color: var(--white);
     display: flex; align-items: center; justify-content: space-between;
     padding: 14px 40px; font-size: 13px;
   }
-  nav .brand { font-weight: 700; font-size: 15px; letter-spacing: .5px; }
+  nav .brand { font-weight: 700; font-size: 15px; }
   nav .links { display: flex; gap: 28px; }
   nav .links a { color: #9CA3AF; text-decoration: none; transition: color .2s; }
   nav .links a:hover { color: var(--white); }
 
-  /* ── HERO ── */
-  .hero {
-    background: var(--black); color: var(--white);
-    padding: 80px 40px 70px;
-    text-align: center;
-  }
+  .hero { background: var(--black); color: var(--white); padding: 80px 40px 70px; text-align: center; }
   .hero .tag {
-    display: inline-block; background: #1F2937;
-    color: #9CA3AF; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    display: inline-block; background: #1F2937; color: #9CA3AF;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
     padding: 6px 16px; border-radius: 20px; margin-bottom: 28px;
   }
-  .hero h1 { font-size: clamp(28px, 4vw, 48px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+  .hero h1 { font-size: clamp(28px,4vw,48px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
   .hero h1 span { color: #F59E0B; }
   .hero p { color: #9CA3AF; font-size: 16px; max-width: 620px; margin: 0 auto 48px; line-height: 1.7; }
-  .hero-stats {
-    display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;
-    border-top: 1px solid #1F2937; padding-top: 40px;
-  }
-  .hero-stats .stat-item { text-align: center; }
+  .hero-stats { display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; border-top: 1px solid #1F2937; padding-top: 40px; }
   .hero-stats .stat-value { font-size: 36px; font-weight: 800; color: #F59E0B; }
   .hero-stats .stat-label { font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
-  /* ── SECTION ── */
   section { padding: 64px 40px; max-width: 1200px; margin: 0 auto; }
-  section h2 {
-    font-size: 22px; font-weight: 700; margin-bottom: 8px;
-    text-transform: uppercase; letter-spacing: 1px;
-  }
-  section .sub { color: var(--mid); font-size: 14px; margin-bottom: 40px; }
+  section h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  section .sub { color: var(--mid); font-size: 14px; margin-bottom: 40px; line-height: 1.6; }
 
-  /* ── EXEC SUMMARY ── */
-  .exec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-  .exec-card {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 12px; padding: 28px 24px; text-align: center;
-  }
+  .exec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 20px; }
+  .exec-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 28px 24px; text-align: center; }
   .exec-card .val { font-size: 32px; font-weight: 800; }
   .exec-card .lbl { font-size: 12px; color: var(--mid); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
   .exec-card .note { font-size: 12px; color: var(--mid); margin-top: 8px; line-height: 1.5; }
 
-  /* ── PERSONA GRID ── */
-  .personas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr)); gap: 28px; }
+  .personas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px,1fr)); gap: 28px; }
 
-  .persona-card {
-    background: var(--white); border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 12px rgba(0,0,0,.06);
-  }
-  .persona-header {
-    padding: 28px 32px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
-  }
+  .persona-card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .persona-header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   .persona-header .left h3 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
-  .persona-header .left .desc { font-size: 13px; color: var(--mid); line-height: 1.5; max-width: 340px; }
-  .persona-header .badge {
-    flex-shrink: 0; padding: 10px 16px; border-radius: 10px;
-    font-size: 12px; font-weight: 700; text-align: center; min-width: 100px;
-  }
+  .persona-header .left .desc { font-size: 13px; color: var(--mid); line-height: 1.55; max-width: 340px; }
+  .persona-header .badge { flex-shrink: 0; padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: center; min-width: 110px; }
   .persona-header .badge .pct { font-size: 22px; font-weight: 800; display: block; }
-  .persona-header .badge .of-base { font-size: 11px; opacity: .75; }
 
-  /* KPI bar */
-  .persona-kpis {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--border);
-  }
+  .persona-kpis { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--border); }
   .kpi-item { padding: 16px 20px; border-right: 1px solid var(--border); }
   .kpi-item:last-child { border-right: none; }
   .kpi-item .kval { font-size: 20px; font-weight: 700; }
   .kpi-item .klbl { font-size: 11px; color: var(--mid); text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+  .kpi-item.alert .kval { color: #DC2626; }
 
-  /* So What bullets */
   .sowhat { padding: 24px 32px; }
   .sowhat .bullet { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
   .sowhat .bullet:last-child { margin-bottom: 0; }
-  .sowhat .pill {
-    flex-shrink: 0; padding: 3px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-top: 2px;
-  }
+  .pill { flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
   .sowhat .bullet .text { font-size: 14px; line-height: 1.55; }
   .sowhat .bullet .text strong { font-weight: 700; }
 
-  /* colour accents per persona */
+  /* Per-persona accent colours */
   .c1 .persona-header { border-left: 5px solid var(--c1); }
-  .c1 .badge { background: #EEF2FF; color: var(--c1); }
-  .c1 .pill.obj { background: #EEF2FF; color: var(--c1); }
-  .c1 .pill.act { background: #E0E7FF; color: #3730A3; }
-  .c1 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c1 .badge { background:#EEF2FF; color:var(--c1); }
+  .c1 .pill.obj { background:#EEF2FF; color:var(--c1); }
+  .c1 .pill.act { background:#E0E7FF; color:#3730A3; }
+  .c1 .pill.imp { background:#D1FAE5; color:#065F46; }
 
   .c2 .persona-header { border-left: 5px solid var(--c2); }
-  .c2 .badge { background: #FEF3E2; color: var(--c2); }
-  .c2 .pill.obj { background: #FEF3E2; color: var(--c2); }
-  .c2 .pill.act { background: #FDE68A33; color: #92400E; }
-  .c2 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c2 .badge { background:#F5F3FF; color:var(--c2); }
+  .c2 .pill.obj { background:#F5F3FF; color:var(--c2); }
+  .c2 .pill.act { background:#EDE9FE; color:#4C1D95; }
+  .c2 .pill.imp { background:#D1FAE5; color:#065F46; }
 
   .c3 .persona-header { border-left: 5px solid var(--c3); }
-  .c3 .badge { background: #ECFDF5; color: var(--c3); }
-  .c3 .pill.obj { background: #ECFDF5; color: var(--c3); }
-  .c3 .pill.act { background: #D1FAE5; color: #065F46; }
-  .c3 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c3 .badge { background:#ECFDF5; color:var(--c3); }
+  .c3 .pill.obj { background:#ECFDF5; color:var(--c3); }
+  .c3 .pill.act { background:#D1FAE5; color:#065F46; }
+  .c3 .pill.imp { background:#D1FAE5; color:#065F46; }
 
   .c4 .persona-header { border-left: 5px solid var(--c4); }
-  .c4 .badge { background: #FEF2F2; color: var(--c4); }
-  .c4 .pill.obj { background: #FEF2F2; color: var(--c4); }
-  .c4 .pill.act { background: #FEE2E2; color: #991B1B; }
-  .c4 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c4 .badge { background:#FFFBEB; color:var(--c4); }
+  .c4 .pill.obj { background:#FFFBEB; color:var(--c4); }
+  .c4 .pill.act { background:#FEF3C7; color:#92400E; }
+  .c4 .pill.imp { background:#D1FAE5; color:#065F46; }
 
   .c5 .persona-header { border-left: 5px solid var(--c5); }
-  .c5 .badge { background: #EDE9FE; color: var(--c5); }
-  .c5 .pill.obj { background: #EDE9FE; color: var(--c5); }
-  .c5 .pill.act { background: #DDD6FE; color: #4C1D95; }
-  .c5 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c5 .badge { background:#EFF6FF; color:var(--c5); }
+  .c5 .pill.obj { background:#EFF6FF; color:var(--c5); }
+  .c5 .pill.act { background:#DBEAFE; color:#1E40AF; }
+  .c5 .pill.imp { background:#D1FAE5; color:#065F46; }
 
   .c6 .persona-header { border-left: 5px solid var(--c6); }
-  .c6 .badge { background: #F9FAFB; color: var(--c6); }
-  .c6 .pill.obj { background: #F9FAFB; color: var(--c6); }
-  .c6 .pill.act { background: #F3F4F6; color: #374151; }
-  .c6 .pill.imp { background: #D1FAE5; color: #065F46; }
+  .c6 .badge { background:#F9FAFB; color:var(--c6); }
+  .c6 .pill.obj { background:#F9FAFB; color:var(--c6); }
+  .c6 .pill.act { background:#F3F4F6; color:#374151; }
+  .c6 .pill.imp { background:#D1FAE5; color:#065F46; }
 
-  /* ── ROI TABLE ── */
   .roi-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--white); border-radius: 12px; overflow: hidden; }
-  thead tr { background: var(--black); color: var(--white); }
-  th { padding: 14px 18px; text-align: left; font-weight: 600; font-size: 12px; letter-spacing: .6px; text-transform: uppercase; }
-  td { padding: 14px 18px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: #FAFAFA; }
-  .tag-high { display: inline-block; background: #D1FAE5; color: #065F46; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-  .tag-med  { display: inline-block; background: #FEF3C7; color: #92400E; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-  .tfoot-row td { font-weight: 700; background: #F9FAFB; border-top: 2px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:13px; background:var(--white); border-radius:12px; overflow:hidden; }
+  thead tr { background:var(--black); color:var(--white); }
+  th { padding:14px 18px; text-align:left; font-weight:600; font-size:12px; letter-spacing:.6px; text-transform:uppercase; }
+  td { padding:14px 18px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:#FAFAFA; }
+  .tag-high { display:inline-block; background:#D1FAE5; color:#065F46; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tag-med  { display:inline-block; background:#FEF3C7; color:#92400E; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tfoot-row td { font-weight:700; background:#F9FAFB; border-top:2px solid var(--border); }
 
-  /* ── APPENDIX ── */
-  .appendix { background: #111827; color: #D1D5DB; border-radius: 16px; padding: 40px; margin-top: 32px; }
-  .appendix h2 { color: var(--white); margin-bottom: 8px; }
-  .appendix .sub { color: #6B7280; margin-bottom: 28px; }
-  .appendix-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
-  .app-card { background: #1F2937; border-radius: 10px; padding: 20px; }
-  .app-card h4 { color: #F9FAFB; font-size: 13px; margin-bottom: 8px; }
-  .app-card p { font-size: 12px; color: #9CA3AF; line-height: 1.6; }
-  .app-card code { font-family: monospace; font-size: 11px; color: #6EE7B7; }
-  .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #374151; }
-  .metric-row:last-child { border-bottom: none; }
-  .metric-row .mname { font-size: 13px; }
-  .metric-row .mval { font-size: 13px; font-weight: 700; color: #F59E0B; }
+  .appendix { background:#111827; color:#D1D5DB; border-radius:16px; padding:40px; margin-top:32px; }
+  .appendix h2 { color:var(--white); margin-bottom:8px; }
+  .appendix .sub { color:#6B7280; margin-bottom:28px; }
+  .appendix-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; }
+  .app-card { background:#1F2937; border-radius:10px; padding:20px; }
+  .app-card h4 { color:#F9FAFB; font-size:13px; margin-bottom:8px; }
+  .app-card p { font-size:12px; color:#9CA3AF; line-height:1.6; }
+  .app-card code { font-family:monospace; font-size:11px; color:#6EE7B7; }
+  .metric-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #374151; }
+  .metric-row:last-child { border-bottom:none; }
+  .metric-row .mval { font-size:13px; font-weight:700; color:#F59E0B; }
 
-  /* ── FOOTER ── */
-  footer { text-align: center; padding: 40px; font-size: 12px; color: var(--mid); border-top: 1px solid var(--border); }
+  .note-box { background:#FEF3C7; border:1px solid #FCD34D; border-radius:10px; padding:16px 20px; margin-bottom:32px; font-size:13px; color:#92400E; line-height:1.6; }
 
-  @media (max-width: 600px) {
-    .personas-grid { grid-template-columns: 1fr; }
-    .persona-kpis { grid-template-columns: repeat(2,1fr); }
-    nav .links { display: none; }
-    .hero-stats { gap: 32px; }
+  footer { text-align:center; padding:40px; font-size:12px; color:var(--mid); border-top:1px solid var(--border); }
+  @media(max-width:600px){
+    .personas-grid{grid-template-columns:1fr;}
+    .persona-kpis{grid-template-columns:repeat(2,1fr);}
+    nav .links{display:none;}
+    .hero-stats{gap:32px;}
   }
 </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
 <nav>
   <span class="brand">JAKALA × LUISS — Customer Segmentation</span>
   <div class="links">
     <a href="#executive">Executive Summary</a>
-    <a href="#personas">Le 6 Personas</a>
+    <a href="#personas">The 6 Personas</a>
     <a href="#roi">ROI &amp; Investment</a>
-    <a href="#appendix">Appendice Tecnica</a>
+    <a href="#appendix">Technical Appendix</a>
   </div>
 </nav>
 
-<!-- ── HERO ── -->
 <div class="hero">
   <div class="tag">Data Science in Action · 2025</div>
-  <h1>Da 21.477 clienti a<br><span>6 strategie di revenue</span></h1>
-  <p>Analisi comportamentale della customer base di un fashion retailer italiano. 24 mesi di dati transazionali trasformati in personas azionabili con ROI misurabili.</p>
+  <h1>From 21,477 customers<br>to <span>6 revenue strategies</span></h1>
+  <p>Behavioral analysis of an Italian fashion retailer's customer base. 24 months of transactional data transformed into actionable personas with measurable ROI.</p>
   <div class="hero-stats">
-    <div class="stat-item"><div class="stat-value">21.477</div><div class="stat-label">Clienti analizzati</div></div>
-    <div class="stat-item"><div class="stat-value">€11,96M</div><div class="stat-label">Revenue osservata (24m)</div></div>
-    <div class="stat-item"><div class="stat-value">6</div><div class="stat-label">Personas identificate</div></div>
-    <div class="stat-item"><div class="stat-value">2,7×</div><div class="stat-label">ROI portfolio strategie</div></div>
+    <div><div class="stat-value">21,477</div><div class="stat-label">Customers analyzed</div></div>
+    <div><div class="stat-value">€11.96M</div><div class="stat-label">Observed revenue (24m)</div></div>
+    <div><div class="stat-value">6</div><div class="stat-label">Distinct personas</div></div>
+    <div><div class="stat-value">5.1×</div><div class="stat-label">Portfolio ROI</div></div>
   </div>
 </div>
 
-<!-- ── EXECUTIVE SUMMARY ── -->
+<!-- EXECUTIVE SUMMARY -->
 <section id="executive">
   <h2>Executive Summary</h2>
-  <p class="sub">I numeri chiave per il top management — prima di entrare nei dettagli delle personas</p>
+  <p class="sub">Key numbers for top management. The model identified 6 behaviorally distinct customer groups. One statistical outlier (1 customer) was automatically excluded — it is not a targetable segment.</p>
   <div class="exec-grid">
     <div class="exec-card">
-      <div class="val" style="color:#1A1A2E">€5,1M</div>
-      <div class="lbl">Revenue da top 25%</div>
-      <div class="note">Solo 5.500 clienti (The Inner Circle) generano il 42,8% del fatturato totale</div>
+      <div class="val" style="color:#1A1A2E">€5.1M</div>
+      <div class="lbl">Revenue from top 25%</div>
+      <div class="note">5,500 customers (The Inner Circle) generate 42.8% of total revenue — the single most critical group to protect</div>
     </div>
     <div class="exec-card">
-      <div class="val" style="color:#C0392B">€259K</div>
-      <div class="lbl">Revenue at Risk / anno</div>
-      <div class="note">Impatto economico stimato se il churn aumenta del 20% senza interventi</div>
+      <div class="val" style="color:#DC2626">33%</div>
+      <div class="lbl">Return rate — Quality Seekers</div>
+      <div class="note">1,113 high-value customers return 1 in 3 items — the hidden margin leak the model uncovered</div>
     </div>
     <div class="exec-card">
-      <div class="val" style="color:#065F46">€376K</div>
-      <div class="lbl">Uplift atteso / anno</div>
-      <div class="note">Incremento di revenue dalle 6 strategie personalizzate combinate</div>
+      <div class="val" style="color:#065F46">€718K</div>
+      <div class="lbl">Expected revenue uplift / yr</div>
+      <div class="note">Combined impact of all 6 targeted strategies, based on conservative conversion assumptions</div>
     </div>
     <div class="exec-card">
-      <div class="val" style="color:#5B4FCF">€140K</div>
-      <div class="lbl">Investimento totale / anno</div>
-      <div class="note">CRM, campagne personalizzate e automation — costo distribuito sui 6 segmenti</div>
+      <div class="val" style="color:#1D4ED8">€140K</div>
+      <div class="lbl">Total investment / yr</div>
+      <div class="note">CRM, personalised campaigns and automation — distributed across all 6 segments</div>
     </div>
     <div class="exec-card">
-      <div class="val" style="color:#F59E0B">€15,3M</div>
-      <div class="lbl">Portfolio CLV stimato</div>
-      <div class="note">Valore presente dei flussi futuri attesi dall'intera customer base</div>
+      <div class="val" style="color:#F59E0B">€15.3M</div>
+      <div class="lbl">Estimated portfolio CLV</div>
+      <div class="note">Present value of future expected cash flows from the full customer base</div>
     </div>
     <div class="exec-card">
-      <div class="val" style="color:#2D6A4F">29,1%</div>
-      <div class="lbl">One-Timer rate</div>
-      <div class="note">6.258 clienti hanno fatto un solo acquisto in 24 mesi — la più grande opportunità inattesa</div>
+      <div class="val" style="color:#7C3AED">29.1%</div>
+      <div class="lbl">One-time buyer rate</div>
+      <div class="note">6,258 customers made exactly one purchase in 24 months and disappeared — the largest untapped opportunity</div>
     </div>
   </div>
 </section>
 
-<!-- ── 6 PERSONAS ── -->
+<!-- 6 PERSONAS -->
 <section id="personas">
-  <h2>Le 6 Customer Personas</h2>
-  <p class="sub">Ogni persona è costruita sulle medie reali delle feature comportamentali. Per ogni segmento: chi sono, cosa li muove, cosa fare.</p>
+  <h2>The 6 Customer Personas</h2>
+  <p class="sub">
+    Each persona is built from the real behavioral averages of its members — no assumptions, no guesswork.<br>
+    The "So What?" framework answers the only question that matters to the Marketing Director: <em>what do we actually do with this?</em>
+  </p>
+
+  <div class="note-box">
+    <strong>Note on cluster merging:</strong> The model initially produced 10 groups. Four groups (clusters 2, 3, 6, 8) shared overlapping behavioral profiles (low frequency, high inactivity, low average spend) and were consolidated into a single <strong>Dormant Potential</strong> segment. Two mid-tier groups (clusters 0, 9) with near-identical KPIs were merged into <strong>Rising Stars</strong>. The result is 6 genuinely distinct segments — each requiring a different marketing lever.
+  </div>
 
   <div class="personas-grid">
 
@@ -267,67 +230,67 @@
       <div class="persona-header">
         <div class="left">
           <h3>💎 The Inner Circle</h3>
-          <p class="desc">I clienti premium del retailer. Comprano di frequente, a prezzo pieno, e tornano entro 4 mesi. Sono il nucleo intoccabile del fatturato: perderli costa più che acquisire 500 nuovi clienti.</p>
+          <p class="desc">The retailer's premium customers. They buy frequently, at full price, and return within 4 months. They represent the most concentrated revenue risk: losing 5% of them costs more than acquiring 500 new customers.</p>
         </div>
         <div class="badge">
-          <span class="pct">25,6%</span>
-          <span>5.500 clienti</span>
-          <div class="of-base" style="margin-top:4px">42,8% del revenue</div>
+          <span class="pct">25.6%</span>
+          <span>5,500 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">42.8% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€932</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">132 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">5,0×</div><div class="klbl">Frequenza media</div></div>
-        <div class="kpi-item"><div class="kval">€188</div><div class="klbl">Basket medio</div></div>
+        <div class="kpi-item"><div class="kval">€932</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">133 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">5.0×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">5%</div><div class="klbl">One-timers</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Proteggere la concentrazione di revenue.</strong> Il 42,8% del fatturato dipende da questo gruppo. Una riduzione del churn del 5% vale più di qualsiasi campagna di acquisizione.</div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Protect revenue concentration.</strong> 42.8% of total revenue depends on this group. A 5pp churn reduction here outperforms any acquisition campaign.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>Programma "Black Card":</strong> early access alle nuove collezioni 72h prima, personal shopper dedicato, tier platinum nel loyalty program, alert predittivo di churn attivato a 120 giorni dall'ultimo acquisto.</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>"Black Card" VIP Program:</strong> exclusive early access to new collections (72h before public), dedicated personal shopper, platinum loyalty tier, predictive churn alert triggered at 120 days of inactivity.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€256K/anno</strong> di revenue protetta: riducendo il churn annuo dal 16% all'11% su 5.500 clienti con spesa media €932. Payback dell'investimento: 3,2 mesi.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€256K/yr</strong> in protected revenue: reducing annual churn from 16% to 11% on 5,500 customers × €932 avg. spend. Investment payback: 3.2 months.</div>
         </div>
       </div>
     </div>
 
-    <!-- 2. BRAND DEVOTEES -->
+    <!-- 2. QUALITY SEEKERS -->
     <div class="persona-card c2">
       <div class="persona-header">
         <div class="left">
-          <h3>📧 Brand Devotees</h3>
-          <p class="desc">Aprono ogni email, cliccano sui contenuti, acquistano a prezzo pieno. Hanno il secondo basket più alto (€816). Non sono i più numerosi, ma sono i più influenzabili positivamente: credono nel brand.</p>
+          <h3>🔄 Quality Seekers</h3>
+          <p class="desc">High spenders and frequent buyers — but they return 1 in 3 items. This is the model's most important discovery: a segment that looks like VIP on revenue but is silently eroding margin. They use the store as a fitting room.</p>
         </div>
         <div class="badge">
-          <span class="pct">5,2%</span>
-          <span>1.113 clienti</span>
-          <div class="of-base" style="margin-top:4px">7,6% del revenue</div>
+          <span class="pct">5.2%</span>
+          <span>1,113 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">7.6% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€816</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">176 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">0,30</div><div class="klbl">Engagement score</div></div>
-        <div class="kpi-item"><div class="kval">4,3×</div><div class="klbl">Frequenza media</div></div>
+        <div class="kpi-item"><div class="kval">€816</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">176 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">4.3×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item alert"><div class="kval">33%</div><div class="klbl">Return rate ⚠️</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Trasformare il brand love in acquisition engine.</strong> Ogni Brand Devotee può portare 1-2 nuovi clienti qualificati se attivato correttamente come ambassador.</div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Cut the 33% return rate to below 20%</strong> — without losing the high purchase frequency. These customers buy right but return because of size/fit uncertainty, not dissatisfaction.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>Referral program bilaterale</strong> (voucher per chi porta + sconto per chi arriva). Ambassador kit con contenuti UGC per i social. Inviti esclusivi a eventi di preview collezione. NPS survey post-acquisto per raccogliere insight di prodotto.</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>Fit intelligence tools:</strong> AI-powered size advisor on product pages, detailed fit guides by category (especially outerwear and suits — the highest-return sub-categories), virtual try-on for e-commerce, proactive return cost transparency at checkout.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€136K/anno</strong> di revenue incrementale: tasso referral atteso 15% su 1.113 clienti → ~167 nuovi clienti × €816 spesa media. Costo di acquisizione da referral vs paid: -60%.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€70K/yr</strong> in recovered margin: reducing return rate by 13pp on 1,113 customers × 4.33 purchases × €190 avg. basket. Secondary benefit: reduced logistics and restocking costs.</div>
         </div>
       </div>
     </div>
@@ -337,32 +300,32 @@
       <div class="persona-header">
         <div class="left">
           <h3>🛍️ Style Explorers</h3>
-          <p class="desc">Acquistano in più categorie nello stesso periodo. Sono naturalmente inclined al cross-selling — non hanno bisogno di essere convinti, solo guidati. Il loro potenziale di basket è ancora inespresso.</p>
+          <p class="desc">They naturally shop across categories in the same season. They don't need to be convinced to buy more — they just need to be guided toward adjacent products they haven't discovered yet. The cross-sell opportunity is already there.</p>
         </div>
         <div class="badge">
-          <span class="pct">15,6%</span>
-          <span>3.353 clienti</span>
-          <div class="of-base" style="margin-top:4px">13,7% del revenue</div>
+          <span class="pct">15.6%</span>
+          <span>3,353 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">13.7% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€489</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">194 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">3,1×</div><div class="klbl">Frequenza media</div></div>
-        <div class="kpi-item"><div class="kval">€158</div><div class="klbl">Basket medio</div></div>
+        <div class="kpi-item"><div class="kval">€489</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">194 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">3.1×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">2%</div><div class="klbl">Return rate</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Aumentare il numero medio di categorie per ordine</strong> da 2,1 a 2,6. Un incremento di +0,5 categorie/ordine su un cliente che acquista 3 volte l'anno vale €75+ di revenue addizionale per cliente.</div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Increase average categories per order from 2.1 to 2.6.</strong> Each additional category purchased generates ~€100 of incremental revenue per visit.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>"Complete the Look" engine:</strong> recommendation personalizzata via email e on-site al checkout basata sulla categoria appena acquistata. Bundle price su outfit completo (outerwear + accessori) con incentivo del 10% sulla seconda categoria.</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>"Complete the Look" engine:</strong> personalised recommendation in post-purchase email and at checkout, based on the category just purchased. Bundle pricing on full outfits (outerwear + accessories) with a 10% incentive on the second category.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€73K/anno:</strong> conversione stimata del 20% sul cross-sell recommendation (670 clienti) × €109 incremento medio di basket. KPI di tracking: avg categories/order, cross-category conversion rate.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€73K/yr:</strong> 20% cross-sell conversion (670 customers) × €109 avg. incremental basket. KPI to track: avg categories per order, cross-category conversion rate.</div>
         </div>
       </div>
     </div>
@@ -372,33 +335,32 @@
       <div class="persona-header">
         <div class="left">
           <h3>🏷️ Deal Chasers</h3>
-          <p class="desc">Comprano principalmente in periodi di saldi o con codici sconto. Alta frequenza di acquisto ma basso valore netto per il retailer: ogni loro transazione erode il margine. Il rischio è creare dipendenza da sconto.</p>
+          <p class="desc">They buy expensive items (€249 avg. basket) but only when there's a discount. High price sensitivity on premium products. The risk: systematic discounting trains them never to buy at full price, eroding margin on the retailer's highest-ticket items.</p>
         </div>
         <div class="badge">
-          <span class="pct">14,2%</span>
-          <span>3.044 clienti</span>
-          <div class="of-base" style="margin-top:4px">11,9% del revenue</div>
+          <span class="pct">14.2%</span>
+          <span>3,044 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">11.9% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€467</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">260 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">22%</div><div class="klbl">Sconto medio</div></div>
-        <div class="kpi-item"><div class="kval">1,8×</div><div class="klbl">Frequenza media</div></div>
+        <div class="kpi-item"><div class="kval">€467</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">260 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">€249</div><div class="klbl">Avg. basket</div></div>
+        <div class="kpi-item alert"><div class="kval">15%</div><div class="klbl">Avg. discount</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Spostare il 20% degli acquisti da saldi a full-price</strong> senza perdere la frequenza. L'obiettivo non è eliminare gli sconti ma rompere il condizionamento: il cliente deve percepire valore anche senza %.
-          </div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Shift 20% of purchases from discounted to full-price</strong> without losing purchase frequency. Break the discount conditioning — the customer needs to perceive value even without a percentage off.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>A/B test su 2 gruppi:</strong> Controllo (email con sconto classico 20%) vs. Trattamento (email editoriale sulla nuova collezione + loyalty points invece di %). Flash sale su categorie non ancora esplorate per stimolare acquisto full-price in nuovi comparti.</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>A/B test on two groups:</strong> Control (classic 20% discount email) vs. Treatment (editorial content on new collection + loyalty points instead of %). Flash sales on unexplored categories to trigger full-price purchase in new product areas.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€89K/anno di gross margin:</strong> 609 clienti (20% del segmento) che spostano anche solo 1 acquisto annuo da saldi a full-price. Riduzione del margin erosion medio da 22% a 17% su quel sottoinsieme.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€89K/yr gross margin:</strong> 609 customers (20% of segment) shifting one annual purchase from discounted to full-price × €249 avg. basket × 15% margin recovery. Lower ROI than other segments — but highest margin at risk if not addressed.</div>
         </div>
       </div>
     </div>
@@ -408,232 +370,208 @@
       <div class="persona-header">
         <div class="left">
           <h3>🌱 Rising Stars</h3>
-          <p class="desc">Il segmento più numeroso: il 28% della base. Clienti regolari con comportamento stabile ma non ancora premium. Sono il "serbatoio" naturale di The Inner Circle — con il giusto nurturing, 1 su 20 può fare il salto di qualità.</p>
+          <p class="desc">The largest segment at 28.3% of the customer base. Regular buyers with stable behaviour, not yet premium. They are the natural feeder pool for The Inner Circle — with the right nudge, 1 in 20 can make the jump. Low-cost, high-upside segment.</p>
         </div>
         <div class="badge">
-          <span class="pct">28,3%</span>
-          <span>6.082 clienti</span>
-          <div class="of-base" style="margin-top:4px">20,2% del revenue</div>
+          <span class="pct">28.3%</span>
+          <span>6,082 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">20.2% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€397</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">203 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">2,5×</div><div class="klbl">Frequenza media</div></div>
-        <div class="kpi-item"><div class="kval">€159</div><div class="klbl">Basket medio</div></div>
+        <div class="kpi-item"><div class="kval">€397</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">203 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">2.5×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">28%</div><div class="klbl">One-timers</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Accelerare il tier upgrade verso The Inner Circle.</strong> Un cliente che passa da €397 a €932 di spesa media genera un incremento di CLV di +€534 lifetime — senza costi di acquisizione.</div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Accelerate tier upgrade toward The Inner Circle.</strong> A customer moving from €397 to €932 in annual spend generates a CLV uplift of +€534 — with zero acquisition cost.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>Loyalty gamification:</strong> messaggio personalizzato "Sei a €X dal livello Silver — ecco cosa ti aspetta". Newsletter editoriale stagionale (non promozionale) per aumentare brand affinity. Inviti a eventi locali pop-up per costruire relazione fisica con il brand.</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>Loyalty gamification:</strong> personalised message "You're €X away from Silver status — here's what unlocks". Seasonal editorial newsletter (non-promotional) to increase brand affinity. Local event invitations (pop-up stores, preview openings) to build a physical connection with the brand.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€162K/anno di CLV uplift:</strong> 5% di upgrade rate (304 clienti) × differenziale di spesa media (+€534/anno vs. livello attuale). ROI a lungo termine: il segmento vale €2,4M di revenue — ogni punto percentuale di upgrade vale +€32K.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€162K/yr CLV uplift:</strong> 5% upgrade rate (304 customers) × €534 average spend delta vs. current level. Every 1pp improvement in upgrade rate is worth +€32K in annual revenue.</div>
         </div>
       </div>
     </div>
 
-    <!-- 6. SILENT DEPARTURES -->
+    <!-- 6. DORMANT POTENTIAL -->
     <div class="persona-card c6">
       <div class="persona-header">
         <div class="left">
-          <h3>👋 Silent Departures</h3>
-          <p class="desc">Clienti che hanno fatto uno o pochissimi acquisti e non si sono più visti. Il loro ultimo acquisto risale in media a 290 giorni fa. Non hanno disdetto nulla — sono semplicemente scomparsi. La finestra di recupero si chiude a breve.</p>
+          <h3>👋 Dormant Potential</h3>
+          <p class="desc">76% bought only once and never came back. Last purchase: 290 days ago on average. They didn't complain, didn't unsubscribe — they simply went silent. Some (the email-engaged sub-group) still open newsletters but don't convert. The reactivation window is closing.</p>
         </div>
         <div class="badge">
-          <span class="pct">11,1%</span>
-          <span>2.385 clienti</span>
-          <div class="of-base" style="margin-top:4px">3,8% del revenue</div>
+          <span class="pct">11.1%</span>
+          <span>2,385 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">3.8% of revenue</div>
         </div>
       </div>
       <div class="persona-kpis">
-        <div class="kpi-item"><div class="kval">€189</div><div class="klbl">Spesa media</div></div>
-        <div class="kpi-item"><div class="kval">290 gg</div><div class="klbl">Ultimo acquisto</div></div>
-        <div class="kpi-item"><div class="kval">1,4×</div><div class="klbl">Frequenza media</div></div>
-        <div class="kpi-item"><div class="kval">€123</div><div class="klbl">Basket medio</div></div>
+        <div class="kpi-item"><div class="kval">€189</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">290 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">76%</div><div class="klbl">One-timers</div></div>
+        <div class="kpi-item"><div class="kval">0.32</div><div class="klbl">Engagement score</div></div>
       </div>
       <div class="sowhat">
         <div class="bullet">
-          <span class="pill obj">Obiettivo</span>
-          <div class="text"><strong>Generare un secondo acquisto entro 90 giorni</strong> prima che il cliente diventi irrecuperabile (churn definitivo oltre i 365 giorni di inattività). Convertire anche solo il 15% è un'opportunità concreta.</div>
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Generate a second purchase within 90 days</strong> before permanent churn (defined as 365+ days of inactivity). Even a 15% reactivation rate on this segment is a concrete revenue recovery opportunity.</div>
         </div>
         <div class="bullet">
-          <span class="pill act">Azione</span>
-          <div class="text"><strong>Win-back sequence in 3 step:</strong> Giorno 30 — "Come sta il tuo [categoria acquistata]?" + prodotto complementare. Giorno 60 — voucher 10% a scadere in 15 giorni. Giorno 90 — ultimo messaggio "Non vogliamo perderti" + offerta flash. Segmentare ulteriormente: saldo vs. full-price all'acquisto originale (diversa leva di attivazione).</div>
+          <span class="pill act">Action</span>
+          <div class="text"><strong>3-step win-back sequence:</strong> Day 30 — "How is your [purchased category]?" + complementary product suggestion. Day 60 — 10% voucher expiring in 15 days. Day 90 — "Last chance" message + flash offer. Email-engaged sub-group: use higher-frequency editorial content instead of discounts — they're already reading, just not converting.</div>
         </div>
         <div class="bullet">
-          <span class="pill imp">Impatto</span>
-          <div class="text"><strong>+€68K/anno:</strong> 15% di reattivazione su 2.385 clienti → 358 clienti riattivati × €189 spesa media. Costo campagna stimato: €8K. Netto: +€60K. KPI: 2nd purchase rate a 90/180 giorni.</div>
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€68K/yr:</strong> 15% reactivation on 2,385 customers → 358 reactivated × €189 avg. spend. Campaign cost: ~€8K. Net: +€60K. KPI: 2nd purchase rate at 90 and 180 days post-campaign.</div>
         </div>
       </div>
     </div>
 
-  </div><!-- end personas-grid -->
+  </div>
 </section>
 
-<!-- ── ROI TABLE ── -->
+<!-- ROI TABLE -->
 <section id="roi">
-  <h2>Investment &amp; ROI per Persona</h2>
-  <p class="sub">Sintesi finanziaria aggregata — tutte le strategie, un solo documento</p>
+  <h2>Investment &amp; ROI by Persona</h2>
+  <p class="sub">Aggregate financial summary — all strategies, one document</p>
   <div class="roi-wrap">
     <table>
       <thead>
         <tr>
           <th>Persona</th>
-          <th>Clienti</th>
-          <th>Revenue base</th>
-          <th>Investimento / anno</th>
-          <th>Uplift atteso</th>
-          <th>ROI netto</th>
-          <th>Priorità</th>
+          <th>Customers</th>
+          <th>Base Revenue</th>
+          <th>Investment / yr</th>
+          <th>Expected Uplift</th>
+          <th>Net ROI</th>
+          <th>Priority</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td><strong>💎 The Inner Circle</strong></td>
-          <td>5.500</td>
-          <td>€5.125.450</td>
-          <td>€45.000</td>
-          <td>+€256.000</td>
-          <td><strong>4,7×</strong></td>
-          <td><span class="tag-high">CRITICA</span></td>
+          <td>5,500</td>
+          <td>€5,125,450</td>
+          <td>€45,000</td>
+          <td>+€256,000</td>
+          <td><strong>5.7×</strong></td>
+          <td><span class="tag-high">CRITICAL</span></td>
         </tr>
         <tr>
           <td><strong>🌱 Rising Stars</strong></td>
-          <td>6.082</td>
-          <td>€2.415.770</td>
-          <td>€30.000</td>
-          <td>+€162.000</td>
-          <td><strong>4,4×</strong></td>
-          <td><span class="tag-high">ALTA</span></td>
-        </tr>
-        <tr>
-          <td><strong>📧 Brand Devotees</strong></td>
-          <td>1.113</td>
-          <td>€908.431</td>
-          <td>€15.000</td>
-          <td>+€136.000</td>
-          <td><strong>8,1×</strong></td>
-          <td><span class="tag-high">ALTA</span></td>
+          <td>6,082</td>
+          <td>€2,415,770</td>
+          <td>€30,000</td>
+          <td>+€162,000</td>
+          <td><strong>5.4×</strong></td>
+          <td><span class="tag-high">HIGH</span></td>
         </tr>
         <tr>
           <td><strong>🛍️ Style Explorers</strong></td>
-          <td>3.353</td>
-          <td>€1.638.611</td>
-          <td>€20.000</td>
-          <td>+€73.000</td>
-          <td><strong>2,7×</strong></td>
-          <td><span class="tag-med">MEDIA</span></td>
+          <td>3,353</td>
+          <td>€1,638,611</td>
+          <td>€20,000</td>
+          <td>+€73,000</td>
+          <td><strong>3.7×</strong></td>
+          <td><span class="tag-high">HIGH</span></td>
         </tr>
         <tr>
           <td><strong>🏷️ Deal Chasers</strong></td>
-          <td>3.044</td>
-          <td>€1.422.461</td>
-          <td>€20.000</td>
-          <td>+€89.000</td>
-          <td><strong>3,5×</strong></td>
-          <td><span class="tag-med">MEDIA</span></td>
+          <td>3,044</td>
+          <td>€1,422,461</td>
+          <td>€20,000</td>
+          <td>+€89,000</td>
+          <td><strong>4.5×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
         </tr>
         <tr>
-          <td><strong>👋 Silent Departures</strong></td>
-          <td>2.385</td>
-          <td>€451.004</td>
-          <td>€10.000</td>
-          <td>+€68.000</td>
-          <td><strong>5,8×</strong></td>
-          <td><span class="tag-med">MEDIA</span></td>
+          <td><strong>🔄 Quality Seekers</strong></td>
+          <td>1,113</td>
+          <td>€908,431</td>
+          <td>€15,000</td>
+          <td>+€70,000</td>
+          <td><strong>4.7×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>👋 Dormant Potential</strong></td>
+          <td>2,385</td>
+          <td>€451,004</td>
+          <td>€10,000</td>
+          <td>+€68,000</td>
+          <td><strong>6.8×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
         </tr>
         <tr class="tfoot-row">
-          <td><strong>TOTALE PORTFOLIO</strong></td>
-          <td><strong>21.477</strong></td>
-          <td><strong>€11.961.727</strong></td>
-          <td><strong>€140.000</strong></td>
-          <td><strong>+€784.000</strong></td>
-          <td><strong>5,6×</strong></td>
-          <td><span class="tag-high">—</span></td>
+          <td><strong>TOTAL PORTFOLIO</strong></td>
+          <td><strong>21,477</strong></td>
+          <td><strong>€11,961,727</strong></td>
+          <td><strong>€140,000</strong></td>
+          <td><strong>+€718,000</strong></td>
+          <td><strong>5.1×</strong></td>
+          <td>—</td>
         </tr>
       </tbody>
     </table>
   </div>
 </section>
 
-<!-- ── APPENDICE TECNICA ── -->
+<!-- TECHNICAL APPENDIX -->
 <section id="appendix">
   <div class="appendix">
-    <h2>Appendice Tecnica</h2>
-    <p class="sub">Dettagli metodologici per il team di data science — non necessari per la presentazione executive</p>
-
+    <h2>Technical Appendix</h2>
+    <p class="sub">Methodology details for the data science team — not required for the executive presentation</p>
     <div class="appendix-grid">
-
       <div class="app-card">
-        <h4>Pipeline end-to-end</h4>
+        <h4>End-to-end pipeline (CRISP-DM)</h4>
+        <p>7 phases: Data Preparation → EDA → Feature Engineering → Dimensionality Reduction → Clustering → Profiling → Financial Modeling. Full pipeline reproducible from the main notebook.</p>
+      </div>
+      <div class="app-card">
+        <h4>Feature Engineering (32 features)</h4>
+        <p>Extended RFM: recency, frequency, monetary, avg_basket.<br>Discount propensity: avg_discount_pct, pct_items_discounted.<br>Email engagement: nl_open_rate, nl_click_rate, composite engagement_score.<br>Product breadth: n_categories, pct per category.<br>Returns: return_rate. Demographics: age_years, tenure_days.</p>
+      </div>
+      <div class="app-card">
+        <h4>Why UMAP + GMM?</h4>
         <p>
-          Il progetto segue il framework <strong>CRISP-DM</strong> in 7 fasi:<br>
-          Data Prep → EDA → Feature Engineering → Dimensionality Reduction → Clustering → Profiling → Financial Modeling.<br>
-          Tutte le fasi sono riproducibili dal notebook principale.
+          <strong>K-Means rejected:</strong> assumes spherical, equal-size clusters — violated by behavioral data.<br>
+          <strong>DBSCAN/OPTICS rejected:</strong> "hairball problem" — uniform density, one mega-cluster.<br>
+          <strong>UMAP:</strong> non-linear projection preserving local topology → behavioral sub-groups become separable.<br>
+          <strong>GMM:</strong> ellipsoidal clusters + soft assignment (each customer gets a confidence score).
         </p>
       </div>
-
       <div class="app-card">
-        <h4>Feature Engineering (32 feature)</h4>
-        <p>
-          RFM esteso: recency, frequency, monetary, avg_basket.<br>
-          Discount propensity: avg_discount_pct, pct_items_discounted.<br>
-          Email engagement: nl_open_rate, nl_click_rate, engagement_score composito.<br>
-          Product breadth: n_categories, pct per categoria.<br>
-          Resi: return_rate. Demo: age_years, tenure_days.
-        </p>
+        <h4>K selection: BIC + business cap</h4>
+        <p>BIC computed for K=3 to K=10. On continuous behavioral data, BIC may decrease monotonically — pure minimisation returned K=10 with duplicate segment profiles. Final K=6 selected via: (1) BIC elbow at 20% of first marginal drop, (2) operational cap K≤6 — beyond 6 segments, distinct marketing campaigns become unmanageable (industry benchmark).</p>
       </div>
-
       <div class="app-card">
-        <h4>Dimensionality Reduction</h4>
-        <p>
-          <code>UMAP (n_components=3)</code> con RobustScaler (mediana/IQR, robusto agli outlier).<br>
-          Scelto su PCA perché preserva la struttura topologica <em>locale</em> — i comportamenti dei clienti formano sottogruppi non-lineari non catturabili da trasformazioni lineari.
-        </p>
-      </div>
-
-      <div class="app-card">
-        <h4>Algoritmo di Clustering</h4>
-        <p>
-          <code>DBSCAN</code> per isolamento outlier (1 cliente, 0.005% del totale).<br>
-          <code>GaussianMixture (K=6, covariance='full')</code> per clustering principale.<br>
-          K scelto tramite BIC elbow + vincolo operativo ≤6 cluster.
-        </p>
-      </div>
-
-      <div class="app-card">
-        <h4>Validazione statistica</h4>
+        <h4>Statistical validation</h4>
         <div>
-          <div class="metric-row"><span class="mname">Silhouette Score</span><span class="mval">↑ meglio, range [-1,1]</span></div>
-          <div class="metric-row"><span class="mname">Davies-Bouldin Index</span><span class="mval">↓ meglio, range [0,∞]</span></div>
-          <div class="metric-row"><span class="mname">Calinski-Harabasz</span><span class="mval">↑ meglio</span></div>
-          <div class="metric-row"><span class="mname">GMM confidence media</span><span class="mval">&gt;0.80 su tutti i cluster</span></div>
+          <div class="metric-row"><span>Silhouette Score</span><span class="mval">↑ better, range [-1,1]</span></div>
+          <div class="metric-row"><span>Davies-Bouldin Index</span><span class="mval">↓ better, range [0,∞]</span></div>
+          <div class="metric-row"><span>Calinski-Harabasz</span><span class="mval">↑ better</span></div>
+          <div class="metric-row"><span>GMM avg. confidence</span><span class="mval">&gt;0.80 across all clusters</span></div>
         </div>
       </div>
-
       <div class="app-card">
-        <h4>Algoritmi scartati</h4>
-        <p>
-          <strong>K-Means:</strong> ipotesi sferica violata — i cluster comportamentali sono ellissoidali.<br>
-          <strong>DBSCAN/OPTICS:</strong> "hairball problem" — densità globalmente uniforme, un solo mega-cluster.<br>
-          <strong>Hierarchical:</strong> dendrogramma senza tagli netti, K arbitrario.
-        </p>
+        <h4>Cluster -1 (Statistical Outlier)</h4>
+        <p>The model automatically isolated <strong>1 customer</strong> as a statistical outlier via DBSCAN — representing 0.005% of the base. This is not a targetable segment. Likely: a test account, B2B reseller, or data entry anomaly. Excluded from all strategic analysis and ROI calculations.</p>
       </div>
-
     </div>
   </div>
 </section>
 
 <footer>
   JAKALA × LUISS — Data Science in Action · 2025 &nbsp;·&nbsp;
-  Dataset: 21.477 clienti, Mar 2023–Feb 2025 &nbsp;·&nbsp;
-  Modello: UMAP + GMM, K=6, Python 3.13
+  Dataset: 21,477 customers, Mar 2023–Feb 2025 &nbsp;·&nbsp;
+  Model: UMAP + GMM, K=6, Python 3.13
 </footer>
 
 </body>
