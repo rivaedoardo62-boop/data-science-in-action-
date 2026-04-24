@@ -1,12 +1,11 @@
 """
 clustering_model.py
--------------------
-Funzioni per pre-processing, clustering UMAP+GMM, valutazione e
-persistenza del modello per il progetto Jakala × LUISS.
+───────────────────
+Preprocessing, dimensionality reduction, GMM clustering, evaluation, and
+model persistence for the Jakala × LUISS Customer Segmentation project.
 
-Usato da:
-  - src/clusters.ipynb
-  - jakala_segmentation_advanced.ipynb (opzionale, il notebook è self-contained)
+Consumed by:
+  - final_segmentation.ipynb
 """
 
 import pickle
@@ -19,18 +18,14 @@ from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 
 
-# ── 1. Preprocessing ─────────────────────────────────────────────────────────
+# Fixed number of clusters — UMAP + GMM with K=6 is the locked-in configuration.
+FIXED_K: int = 6
 
-CLUSTERING_FEATURES_DEFAULT = [
-    "recency_days", "frequency", "monetary", "avg_basket_value",
-    "avg_discount_pct", "pct_items_discounted",
-    "nl_open_rate", "nl_click_rate", "engagement_score",
-    "return_rate",
-]
 
+# ── 1. Preprocessing ──────────────────────────────────────────────────────────
 
 def winsorize(df: pd.DataFrame, cols: list[str], quantile: float = 0.99) -> pd.DataFrame:
-    """Cappa i valori al percentile indicato (default 99°) per ridurre l'impatto degli outlier."""
+    """Cap values at the given quantile (default 99th) to reduce outlier impact."""
     df = df.copy()
     for col in cols:
         if col in df.columns:
@@ -41,12 +36,12 @@ def winsorize(df: pd.DataFrame, cols: list[str], quantile: float = 0.99) -> pd.D
 
 def scale_features(X: np.ndarray) -> tuple[np.ndarray, RobustScaler]:
     """
-    Applica RobustScaler (robusto agli outlier residui post-winsorization).
+    Apply RobustScaler (robust to residual outliers after winsorization).
 
     Returns
     -------
     X_scaled : np.ndarray
-    scaler   : RobustScaler fittato (da salvare per transform su nuovi dati)
+    scaler   : fitted RobustScaler (save to transform new data)
     """
     scaler   = RobustScaler()
     X_scaled = scaler.fit_transform(X)
@@ -59,21 +54,21 @@ def reduce_umap(X_scaled: np.ndarray,
                 min_dist: float = 0.1,
                 seed: int = 42) -> tuple[np.ndarray, object]:
     """
-    Riduzione dimensionale con UMAP.
+    Dimensionality reduction with UMAP.
 
     Parameters
     ----------
-    n_components : 2 per visualizzazione, 3 per clustering (default)
+    n_components : 2 for visualisation, 3 for clustering (default)
 
     Returns
     -------
-    X_umap  : np.ndarray di shape (n_samples, n_components)
-    reducer : UMAP fittato (da salvare per transform su nuovi dati)
+    X_umap  : np.ndarray of shape (n_samples, n_components)
+    reducer : fitted UMAP object (save to transform new data)
     """
     try:
         from umap import UMAP
     except ImportError:
-        raise ImportError("Installa umap-learn: pip install umap-learn")
+        raise ImportError("Install umap-learn: pip install umap-learn")
 
     reducer = UMAP(
         n_neighbors  = n_neighbors,
@@ -93,13 +88,13 @@ def select_k_bic(X: np.ndarray,
                  n_init: int = 5,
                  seed: int = 42) -> tuple[int, list[float], list[float]]:
     """
-    Seleziona il numero ottimale di componenti GMM minimizzando il BIC.
+    Select the optimal number of GMM components by minimising BIC.
 
     Returns
     -------
-    k_opt      : numero ottimale di cluster
-    bic_scores : lista BIC per ogni K
-    aic_scores : lista AIC per ogni K
+    k_opt      : optimal cluster count
+    bic_scores : BIC for each K in k_range
+    aic_scores : AIC for each K in k_range
     """
     bic_scores, aic_scores = [], []
     for k in k_range:
@@ -113,43 +108,46 @@ def select_k_bic(X: np.ndarray,
     return k_opt, bic_scores, aic_scores
 
 
-def fit_gmm(X: np.ndarray, k: int, n_init: int = 10, seed: int = 42) -> GaussianMixture:
-    """Fitta il GMM finale con il K ottimale."""
+def fit_gmm(X: np.ndarray,
+            k: int = FIXED_K,
+            n_init: int = 10,
+            seed: int = 42) -> GaussianMixture:
+    """Fit the final GMM with the given number of components (default: FIXED_K=6)."""
     gmm = GaussianMixture(n_components=k, covariance_type="full",
                           n_init=n_init, random_state=seed)
     gmm.fit(X)
     return gmm
 
 
-# ── 3. Valutazione ────────────────────────────────────────────────────────────
+# ── 3. Evaluation ─────────────────────────────────────────────────────────────
 
 def evaluate_clustering(X: np.ndarray,
                         labels: np.ndarray,
                         sample_size: int = 5000,
                         seed: int = 42) -> dict:
     """
-    Calcola Silhouette Score, Davies-Bouldin Index e Calinski-Harabasz Score.
+    Compute Silhouette Score, Davies-Bouldin Index, and Calinski-Harabasz Score.
 
     Returns
     -------
-    dict con chiavi: silhouette, davies_bouldin, calinski_harabasz
+    dict with keys: silhouette, davies_bouldin, calinski_harabasz
     """
     sil = silhouette_score(X, labels, sample_size=sample_size, random_state=seed)
     dbi = davies_bouldin_score(X, labels)
     chi = calinski_harabasz_score(X, labels)
 
     print("=== CLUSTERING EVALUATION ===")
-    print(f"Silhouette Score     : {sil:.4f}  (↑ meglio, range [-1,1])")
-    print(f"Davies-Bouldin Index : {dbi:.4f}  (↓ meglio)")
-    print(f"Calinski-Harabasz    : {chi:.1f}  (↑ meglio)")
+    print(f"Silhouette Score     : {sil:.4f}  (higher is better, range [-1, 1])")
+    print(f"Davies-Bouldin Index : {dbi:.4f}  (lower is better)")
+    print(f"Calinski-Harabasz    : {chi:.1f}  (higher is better)")
 
     return {"silhouette": sil, "davies_bouldin": dbi, "calinski_harabasz": chi}
 
 
-# ── 4. Persistenza ────────────────────────────────────────────────────────────
+# ── 4. Persistence ────────────────────────────────────────────────────────────
 
 def save_model(obj: object, path: str | Path) -> None:
-    """Serializza un oggetto (scaler, reducer, gmm) con pickle."""
+    """Serialize an object (scaler, reducer, gmm) with pickle."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as f:
         pickle.dump(obj, f)
@@ -157,6 +155,6 @@ def save_model(obj: object, path: str | Path) -> None:
 
 
 def load_model(path: str | Path) -> object:
-    """Carica un oggetto serializzato con pickle."""
+    """Load a pickle-serialized object."""
     with open(path, "rb") as f:
         return pickle.load(f)
