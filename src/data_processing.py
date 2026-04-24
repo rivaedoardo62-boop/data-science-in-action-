@@ -1,12 +1,12 @@
 """
 data_processing.py
 ------------------
-Funzioni di caricamento, pulizia e feature engineering per il progetto
-Jakala × LUISS Customer Segmentation.
+Loading, cleaning and feature engineering functions for the
+Jakala x LUISS Customer Segmentation project.
 
-Usato da:
+Used by:
   - src/cleaning_data.ipynb
-  - jakala_segmentation_advanced.ipynb (opzionale, il notebook è self-contained)
+  - jakala_segmentation_advanced.ipynb (optional — the notebook is self-contained)
 """
 
 from pathlib import Path
@@ -14,10 +14,10 @@ import numpy as np
 import pandas as pd
 
 
-# ── 1. Caricamento ────────────────────────────────────────────────────────────
+# ── 1. Loading ────────────────────────────────────────────────────────────────
 
 def load_master(path: str | Path) -> pd.DataFrame:
-    """Carica master_transactions.csv e converte le date."""
+    """Load master_transactions.csv and parse date columns."""
     df = pd.read_csv(path)
     df["Date"]              = pd.to_datetime(df["Date"], format="%d%b%Y", errors="coerce")
     df["Date_Of_Birth"]     = pd.to_datetime(df["Date_Of_Birth"], errors="coerce")
@@ -26,14 +26,14 @@ def load_master(path: str | Path) -> pd.DataFrame:
     return df
 
 
-# ── 2. Pulizia ────────────────────────────────────────────────────────────────
+# ── 2. Cleaning ───────────────────────────────────────────────────────────────
 
 def clean_master(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Pulizia base:
-    - Riempie i rate newsletter mancanti con 0 (cliente senza iscrizione)
-    - Rimuove righe con customer_id o Date nulli
-    - Aggiunge flag is_return (1 se line_amount < 0)
+    Basic cleaning:
+    - Fill missing newsletter rates with 0 (no subscription)
+    - Drop rows with null customer_id or Date
+    - Add is_return flag (1 if line_amount < 0)
     """
     df = df.copy()
     for col in ["nl_open_rate", "nl_click_rate", "nl_count", "nl_open_count", "nl_click_count"]:
@@ -47,8 +47,8 @@ def clean_master(df: pd.DataFrame) -> pd.DataFrame:
 
 def flag_one_timers(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Aggiunge colonna is_one_timer:
-    1 se il cliente ha un solo giorno di acquisto distinto nel dataset.
+    Add is_one_timer column:
+    1 if the customer has only one distinct purchase day in the dataset.
     """
     df = df.copy()
     sessions = (
@@ -66,11 +66,11 @@ def flag_one_timers(df: pd.DataFrame) -> pd.DataFrame:
 
 def compute_rfm(df: pd.DataFrame, ref_date: pd.Timestamp | None = None) -> pd.DataFrame:
     """
-    Calcola le feature RFM classiche a livello cliente.
+    Compute classic RFM features at customer level.
 
     Returns
     -------
-    DataFrame con colonne:
+    DataFrame with columns:
         customer_id, last_purchase, frequency, monetary,
         n_items_bought, avg_basket_value, recency_days
     """
@@ -89,7 +89,7 @@ def compute_rfm(df: pd.DataFrame, ref_date: pd.Timestamp | None = None) -> pd.Da
 
 
 def compute_discount_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Propensione allo sconto per cliente."""
+    """Discount propensity features per customer."""
     purchases = df[df["is_return"] == 0].copy()
     disc = purchases.groupby("customer_id").agg(
         avg_discount_pct     = ("discount_percentage", "mean"),
@@ -100,7 +100,7 @@ def compute_discount_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compute_email_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Engagement newsletter per cliente."""
+    """Newsletter engagement features per customer."""
     nl = df.groupby("customer_id").agg(
         nl_count      = ("nl_count",      "max"),
         nl_open_rate  = ("nl_open_rate",  "max"),
@@ -112,7 +112,7 @@ def compute_email_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compute_return_features(df: pd.DataFrame) -> pd.DataFrame:
-    """Return rate per cliente."""
+    """Return rate per customer."""
     ret = df.groupby("customer_id").agg(
         total_lines  = ("is_return", "count"),
         return_lines = ("is_return", "sum"),
@@ -123,11 +123,11 @@ def compute_return_features(df: pd.DataFrame) -> pd.DataFrame:
 
 def build_customer_matrix(df: pd.DataFrame, ref_date: pd.Timestamp | None = None) -> pd.DataFrame:
     """
-    Pipeline completa: aggrega tutte le feature a livello cliente.
+    Full pipeline: aggregate all features at customer level.
 
     Returns
     -------
-    customer_matrix : DataFrame (1 riga = 1 cliente)
+    customer_matrix : DataFrame (1 row = 1 customer)
     """
     if ref_date is None:
         ref_date = df["Date"].max()
@@ -151,7 +151,7 @@ def build_customer_matrix(df: pd.DataFrame, ref_date: pd.Timestamp | None = None
     for tbl in [disc, nl, ret, demo]:
         cm = cm.merge(tbl, on="customer_id", how="left")
 
-    # Riempi NaN su feature numeriche con 0
+    # Fill NaN on numeric features with 0
     num_cols = cm.select_dtypes(include="number").columns.tolist()
     cm[num_cols] = cm[num_cols].fillna(0)
 
