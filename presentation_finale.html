@@ -277,7 +277,7 @@
       <div class="step">
         <span class="step-num">1</span>
         <span class="step-label">Data Preparation</span>
-        <span class="step-note">Date parsing · NA handling · one-timer flag · negative-spend audit (52 anomalous customers removed)</span>
+        <span class="step-note">Date parsing · NA handling · one-timer flag · negative-spend audit (~56 anomalous customers removed: return_value &gt; gross_spend)</span>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
@@ -295,13 +295,13 @@
       <div class="step">
         <span class="step-num">4</span>
         <span class="step-label">UMAP</span>
-        <span class="step-note">32D → 2D · RobustScaler · non-linear topology preserved · behavioral sub-groups become spatially separable</span>
+        <span class="step-note">32D → 3D (clustering) / 2D (visualisation) · RobustScaler · non-linear topology preserved · behavioral sub-groups become spatially separable</span>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
         <span class="step-num">5</span>
         <span class="step-label">Clustering</span>
-        <span class="step-note">DBSCAN for statistical outlier isolation · GMM for main segmentation (K=6, BIC elbow + business cap)</span>
+        <span class="step-note">GMM for main segmentation (K=6, BIC elbow + operational cap ≤6); DBSCAN/OPTICS tested and rejected — hairball problem on uniform-density behavioral data</span>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">

@@ -1,8 +1,7 @@
 # Data folders
 ROW DATA/
 MERGERED DATA/
-io/*
-!io/.gitkeep
+io/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
