@@ -1,25 +1,39 @@
-# Data folders
+# ── Data + runtime artefacts (per project_rulez §5) ──────────────────────────
 ROW DATA/
 MERGERED DATA/
 io/
+src/io/
+src/io/assets/
+src/io/models/
 
-# Jupyter checkpoints
+# ── Jupyter ──────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/
 
-# VS Code
+# ── IDE ──────────────────────────────────────────────────────────────────────
 .vscode/
+.idea/
+*.code-workspace
 
-# macOS
+# ── macOS ────────────────────────────────────────────────────────────────────
 .DS_Store
 
-# Python
+# ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
 .env
 venv/
+.venv/
 
-# CSV / data files
+# ── Model artefacts ──────────────────────────────────────────────────────────
+*.pkl
+
+# ── Data files (large; reproducible from master_transactions.csv) ────────────
+# Track only the canonical input + final segmentation export at the repo root;
+# everything else (intermediate CSVs, sweeps) belongs in src/io/.
 *.csv
+!master_transactions.csv
+!customer_segmentation_results.csv
+
 *.xlsx
 *.json

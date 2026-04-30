@@ -1,21 +1,28 @@
 # Jakala × LUISS — Customer Segmentation Project
 
-> **CRISP-DM end-to-end pipeline** · UMAP + Gaussian Mixture Model (K=6)  
-> Data Science in Action — LUISS / JAKALA · Academic Year 2024–2025
+> **CRISP-DM end-to-end pipeline** · UMAP + Gaussian Mixture Model (K=6)
+> Data Science in Action — LUISS / JAKALA · Academic Year 2025–2026
+> Team: **The Hexagon**
 
 ---
 
 ## Executive Summary
 
-An Italian fashion retailer with **21,477 customers** and **€11.96M** in observed revenue over 24 months (March 2023 – February 2025) had no structured view of its customer base. Every customer received the same marketing treatment — irrespective of whether they were a high-value VIP buying at full price, a discount-dependent buyer eroding margins, or a one-time purchaser who had silently churned.
+An Italian fashion retailer with **21,424 customers** and **€12,084,646** in observed
+revenue over 24 months (March 2023 – February 2025) had no structured view of its
+customer base. Every customer received the same marketing treatment regardless of value,
+behaviour, or engagement pattern.
 
-This project applied a rigorous **data-driven segmentation pipeline** to answer three research questions:
+This project applied a rigorous **data-driven segmentation pipeline** to answer three
+research questions:
 
-1. Do behaviorally distinct customer groups exist in the data, or is this a homogeneous customer base?
-2. If distinct groups exist, what are their defining statistical signatures — and what do those signatures mean for commercial strategy?
-3. What is the quantified financial impact of designing targeted strategies for each group, relative to a uniform-treatment baseline?
+1. Do behaviourally distinct customer groups exist in the data?
+2. If distinct groups exist, what are their defining statistical signatures?
+3. What is the quantified financial impact of targeted strategies relative to uniform treatment?
 
-**Results:** 6 statistically validated customer segments, each with a distinct behavioral profile. A targeted strategy roadmap with **€140K/yr investment** generating a projected **+€718K/yr revenue uplift** — a **5.1× gross return multiple** on the strategy investment.
+**Results:** 6 statistically validated customer segments. A targeted strategy roadmap
+with **€140K/yr investment** projects a **€342K/yr revenue uplift** — a **2.4× gross
+return multiple** on the strategy investment (scenario estimate; A/B validation required).
 
 ---
 
@@ -23,122 +30,124 @@ This project applied a rigorous **data-driven segmentation pipeline** to answer 
 
 | Dimension | Value |
 |-----------|-------|
-| Customers | 21,477 (after removing ~56 anomalies) |
-| Transactions | 102,655 raw lines |
+| Customers | 21,424 (after removing 56 negative-spend anomalies from 21,480 raw) |
+| Transaction rows | 102,655 raw lines |
 | Observation window | 24 months — Mar 2023 → Feb 2025 |
-| Observed revenue | €11.96M |
-| Projected CLV (portfolio) | €15.3M |
-| Features engineered | 32 behavioral signals per customer |
+| Observed revenue | €12,084,646 |
+| Projected CLV (portfolio) | €16,187,953 |
+| Clustering features | 24 behavioural signals per customer |
 
-CSV files are excluded from git tracking (`.gitignore`). Copy `master_transactions.csv` to the root directory before running any notebook.
+Place `master_transactions.csv` in `src/io/` before running the notebook.
 
 ---
 
-## Methodology — 7-Phase CRISP-DM Pipeline
+## Methodology — CRISP-DM Pipeline (6 Phases + Financial Extension)
 
 | Phase | Description | Key Decision |
 |-------|-------------|--------------|
-| **1 · Data Preparation** | Date parsing, NA handling, one-timer flag | ~56 customers with return_value > gross_spend removed as accounting anomalies |
-| **2 · Advanced EDA** | Seasonality, Pareto 80/20, email funnel, bivariate analysis | Sale months (Jan+Jul) drive +41% revenue uplift vs. non-sale baseline |
-| **3 · Feature Engineering** | 32 behavioral signals per customer across 6 dimensions | RFM, discount propensity, email engagement, returns, category mix, demographics |
-| **4 · Dimensionality Reduction** | UMAP 32D → 3D (clustering) / 2D (visualisation) | **Why UMAP over PCA:** PCA is linear — it cannot recover non-linear manifold structure. UMAP preserves local topology and reveals behavioral sub-groups invisible to Euclidean distance methods. **Why RobustScaler:** customer spend distributions are right-skewed with genuine outliers (VIPs). StandardScaler distorts these into the center; MinMaxScaler amplifies them. RobustScaler scales by IQR, preserving relative spread without collapsing the tail. |
-| **5 · Clustering** | GMM K=6, covariance_type='full', n_init=10 | **Why GMM over K-Means:** behavioral clusters are non-spherical and overlap probabilistically. GMM fits ellipsoidal covariance envelopes and assigns each customer a confidence score (soft membership). K-Means assumes equal-radius, equal-size spheres — violated by this data. **Why K=6:** BIC elbow at K=6 (marginal BIC gain < 20% of first drop beyond K=6) + operational cap (>6 segments is unmanageable for CRM execution). DBSCAN and OPTICS rejected — hairball problem: behavioral data has near-uniform density, causing 99.7% of customers to collapse into one mega-cluster regardless of epsilon. |
-| **6 · Profiling & Strategy** | Back-projection onto original features, persona naming, radar chart, geographic VIP index | Cluster names derived from highest-signal statistical feature per segment, not assigned arbitrarily |
-| **7 · Financial Modelling** | dCLV by segment, Revenue at Risk (3 scenarios), ROI per strategy, CEO P&L table | dCLV formula: AOV × freq_annual × (retention / (1 + r − retention)), r = 10% WACC proxy |
-
-### Why the Anomaly Removal Matters (Problem Solving Criterion)
-
-Among the 21,480 raw customers, **~56 exhibit return_value > gross_spend** — a physical impossibility for a legitimate retail customer. These are accounting artifacts: B2B resellers processing returns across accounts, multi-account holders, or data-entry errors. If retained, they would produce **negative monetary values** in the RFM vector, corrupting the distance matrix used by UMAP and biasing any cluster that absorbed them. Removing them is not data loss — it is **data quality enforcement** that protects the validity of every downstream result.
+| **1 · Data Preparation** | Date parsing, NA handling, anomaly removal | 56 customers with `return_value > gross_spend` removed (an economically impossible bookkeeping condition) |
+| **2 · Advanced EDA** | Seasonality, Pareto, email funnel, bivariate analysis | Top 20% of customers generate **51.2%** of revenue (top decile: 32.4%); subscriber rate 78.6%, open rate 81.3% (of subs), click-through 48.6% (of subs) |
+| **3 · Feature Engineering** | 24 behavioural signals across 6 dimensions | RFM, discount propensity, email engagement, returns, category mix, channel/lifecycle |
+| **4 · Dimensionality Reduction** | UMAP 24D→3D (clustering) / 2D (visualisation) | **Why UMAP:** preserves non-linear manifold structure. **Why RobustScaler:** retail distributions are right-skewed; IQR-based scaling robust to extremes |
+| **5 · Clustering** | GMM K=6, covariance_type='full', n_init=10 | **Why GMM:** soft membership, ellipsoidal covariance. **Why K=6:** four convergent criteria — BIC elbow at K=6→7, Silhouette plateau in K∈[5,8] (bootstrap 0.420±0.004 at K=6), ARI(K=6,K=7)=0.84 stability, posterior-confidence collapse at K≥9 |
+| **6 · Profiling & Strategy** | Back-projection, persona naming, radar chart, geographic VIP index | Names derived from the statistically dominant feature per segment |
+| **Financial Extension** *(not a CRISP-DM phase)* | dCLV by segment, Revenue at Risk, ROI per strategy | dCLV = AOV × f_annual × r_ret/(1+r−r_ret), r=0.10 WACC proxy |
 
 ---
 
 ## 6 Customer Segments
 
-| Segment | Size | Revenue Share | Defining Signal | Behavioral Interpretation |
-|---------|:----:|:-------------:|-----------------|---------------------------|
-| 💎 **The Inner Circle** | 25.6% · 5,500 | **42.8%** | monetary=€932, freq=5×/yr, recency=133d | Premium buyers at full price, low recency — highest revenue concentration risk |
-| 🌱 **Rising Stars** | 28.3% · 6,082 | 20.2% | monetary=€397, freq=2.5×/yr, 28% one-timers | Stable mid-tier buyers; natural feeder pool for The Inner Circle |
-| 🛍️ **Style Explorers** | 15.6% · 3,353 | 13.7% | n_categories=2.1+, return_rate=2% | Multi-category natural browsers; highest cross-sell conversion potential |
-| 🏷️ **Deal Chasers** | 14.2% · 3,044 | 11.9% | discount_rate=74.6%, avg_basket=€249 | Discount-conditioned buyers; high ticket but systematic margin erosion |
-| 👋 **Dormant Potential** | 11.1% · 2,385 | 3.8% | recency=290d, one_timer=76% | Silent churners; email-engaged sub-group still opens newsletters but does not convert |
-| 🔄 **Quality Seekers** | 5.2% · 1,113 | 7.6% | return_rate=**33%**, monetary=€816 | High-spend, high-frequency — but 1 in 3 items returned; the hidden margin leak |
-
-### Cluster Naming Rationale
-
-Cluster names are derived from the **statistically dominant feature** of each group, not from intuition:
-
-- **Inner Circle** — highest monetary AND lowest recency, simultaneously. The only cluster where both dimensions are top-ranked. Named for the Pareto-dominant revenue contribution.
-- **Deal Chasers** — identified by `avg_discount_pct` × `pct_items_discounted` composite score (PERSONA_SCORES in notebook). The 74.6% promotional transaction rate is a 3σ+ outlier from the population mean.
-- **Quality Seekers** — highest `engagement_score` (email open+click rate) among all clusters. They engage deeply with the brand but exhibit pathological return behavior — an information asymmetry problem, not satisfaction failure.
-- **Dormant Potential** — highest `recency_days / (monetary + 1)` ratio: maximum time since last purchase relative to their (low) value. Consolidated from 4 GMM sub-clusters with overlapping low-activity profiles.
-- **Style Explorers** — highest `n_categories_explored`. The only cluster where multi-category breadth is a statistically defining trait (p < 0.001 vs. next nearest).
-- **Rising Stars** — residual category after greedy assignment of the above five. Confirmed by feature-space proximity (pairwise Euclidean in UMAP coordinates) — this cluster sits in the center of the behavioral distribution.
-
----
-
-## Business Strategy — Hyper-Targeted Actions
-
-| Segment | Channel | Product Focus | Incentive | KPI Target |
-|---------|---------|---------------|-----------|------------|
-| 💎 Inner Circle | Personal shopper + exclusive email | New arrivals — full price only | 72h early access + Platinum loyalty tier | VIP churn rate; 12-month CLV |
-| 🌱 Rising Stars | Gamified app + editorial newsletter | Preferred category + adjacent upsell | "€X from Silver tier" progress bar | Upgrade rate to Inner Circle; share-of-wallet |
-| 🛍️ Style Explorers | Post-purchase email + on-site recommendation | Cross-category adjacent to last purchase | 10% bundle discount on second category | Avg categories/order; cross-category conversion |
-| 🏷️ Deal Chasers | A/B test: promo email vs. editorial | Unexplored full-price categories | Loyalty points instead of % off | % full-price purchases; gross margin/customer |
-| 👋 Dormant Potential | 3-step win-back sequence (Day 30/60/90) | Category of first (only) purchase | Day-60 expiring 10% voucher | 2nd purchase rate at 90 and 180 days |
-| 🔄 Quality Seekers | On-site PDP + post-purchase email | Outerwear + suits (highest return sub-categories) | AI size advisor + virtual try-on | Return rate (target: 33% → <20%); logistics cost |
+| Segment | Size | % | Defining Signal | dCLV |
+|---------|:----:|:-:|-----------------|:----:|
+| **🏆 Active Loyalists** | 6,495 | 30.3% | Recency 131d, freq 5.0/24mo, monetary €957, broad cats | €1,545 |
+| **🌱 Core Customers** | 10,256 | 47.9% | Recency 199d, freq 2.7/24mo, monetary €484 — feeder pool | €545 |
+| **🎯 One-Shot Shoppers** | 2,727 | 12.7% | Recency 305d, freq 1.18, single-category, AOV €98 | €85 |
+| **📧 Promo-Engaged** | 768 | 3.6% | Engagement 0.83 vs portfolio 0.23 (3.7×), discount 14% | €310 |
+| **💤 Lapsed Low-Value** | 675 | 3.2% | Recency 315d, freq 1.10, monetary €148, low-cost reactivation | €106 |
+| **🚪 Churned** | 503 | 2.3% | Recency 306d, freq 1.04, monetary €128, smallest cluster | €95 |
 
 ---
 
 ## Business Impact
 
-| Profile | Customers | Base Revenue | Investment/yr | Expected Uplift | Gross ROI |
-|---------|:---------:|:------------:|:-------------:|:---------------:|:---------:|
-| 💎 The Inner Circle | 5,500 | €5,125,450 | €45,000 | +€256,000 | **5.7×** |
-| 🌱 Rising Stars | 6,082 | €2,415,770 | €30,000 | +€162,000 | **5.4×** |
-| 🛍️ Style Explorers | 3,353 | €1,638,611 | €20,000 | +€73,000 | **3.7×** |
-| 🏷️ Deal Chasers | 3,044 | €1,422,461 | €20,000 | +€89,000 | **4.5×** |
-| 🔄 Quality Seekers | 1,113 | €908,431 | €15,000 | +€70,000 | **4.7×** |
-| 👋 Dormant Potential | 2,385 | €451,004 | €10,000 | +€68,000 | **6.8×** |
-| **TOTAL PORTFOLIO** | **21,477** | **€11,961,727** | **€140,000** | **+€718,000** | **5.1×** |
+| Segment | Customers | Budget | Scenario Uplift | Gross ROI |
+|---------|:---------:|:------:|:---------------:|:---------:|
+| Active Loyalists  | 6,495 | €45K | +€228K | **5.1×** |
+| Core Customers    | 10,256 | €30K | +€95K | **3.2×** |
+| One-Shot Shoppers | 2,727 | €20K | +€10K | 0.5× |
+| Promo-Engaged     | 768 | €20K | +€4K | 0.2× |
+| Lapsed Low-Value  | 675 | €10K | +€5K | 0.5× |
+| Churned           | 503 | €15K | +€1K | 0.1× |
+| **TOTAL PORTFOLIO** | **21,424** | **€140K** | **+€342K** | **2.4×** |
 
-> **ROI definition:** gross return multiple = Revenue Uplift / Annual Investment. Uplift figures are based on conservative conversion assumptions per segment (detailed in `presentation_finale.html`).
+> **ROI definition:** gross return multiple = Scenario Uplift / Annual Investment.
+> Not an accounting ROI — uplifts are derived from untested behavioural assumptions
+> and require A/B validation before operational adoption.
+>
+> **Break-even:** If Active-Loyalist churn reduction falls below **0.6 pp** (from the
+> assumed 5 pp), the portfolio gross return multiple falls to ≤1×.
+
+---
+
+## Validation Metrics
+
+| Metric | Result | Benchmark |
+|--------|--------|-----------|
+| Silhouette Score (K=6) | 0.4188 (bootstrap 0.420 ± 0.004) | >0.35 = good |
+| Davies-Bouldin Index | 0.7604 | <1.0 = good |
+| Calinski-Harabasz | 10,975 | Higher = better |
+| GMM Posterior Confidence | 0.983 avg; 96.5% > 0.80 | >0.80 threshold |
+| ARI(K=5, K=6) / ARI(K=6, K=7) | 0.892 / 0.837 | High = stable partition |
+
+Bootstrap Silhouette across K=2..10 and the full neighbour-ARI matrix are reproduced
+in master notebook cells 23–24 and persisted to `src/io/k_sweep_validation.csv`,
+`src/io/silhouette_bootstrap.csv`, `src/io/ari_neighbours.csv`,
+`src/io/posterior_confidence.csv`.
 
 ---
 
 ## Repository Structure
 
 ```
-│  ── NOTEBOOKS ──────────────────────────────────────────────────────────────
-├── final_segmentation.ipynb            ← MAIN NOTEBOOK (full CRISP-DM pipeline)
-├── jakala_segmentation_advanced.ipynb  # Secondary: extended EDA and profiling
+├── technical_report.pdf            ← FINAL DELIVERABLE (PDF at repo root)
+├── technical_report.tex            ← LaTeX source
+├── pitch_presentation.pdf          ← Final pitch (Beamer)
+├── pitch_presentation.tex          ← LaTeX source
+├── checkpoint_presentation.pdf     ← Mid-project checkpoint deck (Feb 2026)
+├── checkpoint_presentation.tex     ← LaTeX source
+├── master_segmentation.ipynb       ← MAIN NOTEBOOK (full CRISP-DM pipeline)
+│
 ├── src/
-│   ├── cleaning_data.ipynb             # Exploratory: initial data cleaning and EDA
-│   ├── clusters.ipynb                  # Exploratory: GMM K selection, UMAP visualisation
-│   ├── data_processing.py              # Module: data loading and feature engineering
-│   └── clustering_model.py             # Module: scaling, UMAP, GMM fitting, evaluation
+│   ├── README.md                   # How-to for src/ modules
+│   ├── data_processing.py          # Module: data loading and feature engineering
+│   ├── clustering_model.py         # Module: scaling, UMAP, GMM, evaluation
+│   ├── exploratory/                # Dev-only artefacts (not part of canonical pipeline)
+│   │   ├── README.md
+│   │   ├── cleaning_data.ipynb
+│   │   └── clusters.ipynb
+│   └── io/                         # NOT tracked by git — runtime artefacts only
+│       ├── master_transactions.csv    ← input (copy here before running)
+│       ├── customer_segmentation_results.csv  ← output
+│       ├── k_sweep_validation.csv     ← K-sweep diagnostics
+│       ├── silhouette_bootstrap.csv
+│       ├── ari_neighbours.csv
+│       ├── posterior_confidence.csv
+│       ├── assets/                    ← notebook-generated PNGs
+│       └── models/                    ← trained models (pkl)
 │
-│  ── PRESENTATION & REPORTS ─────────────────────────────────────────────────
-├── presentation_finale.html            # CEO briefing: methodology + strategy + ROI per segment
-├── docs/
-│   └── academic_report.pdf             # Academic report (reportlab PDF)
+├── assets/                         # Curated final figures (committed; used by report)
+│   ├── bic_selection.png
+│   ├── umap_space.png
+│   ├── cluster_heatmap.png
+│   ├── clv_analysis.png
+│   ├── revenue_at_risk.png
+│   ├── roi_framework.png
+│   ├── ceo_pnl_heatmap.png
+│   └── eda_*.png
 │
-│  ── IMAGES ─────────────────────────────────────────────────────────────────
-├── assets/
-│   ├── bic_selection.png               # BIC/AIC elbow curve — K=6 selection
-│   ├── umap_space.png                  # UMAP 3D scatter coloured by cluster
-│   ├── cluster_heatmap.png             # Feature heatmap by segment
-│   ├── clv_analysis.png                # Customer Lifetime Value by segment
-│   ├── revenue_at_risk.png             # ±20% churn scenario analysis
-│   ├── roi_framework.png               # ROI per strategic initiative
-│   ├── ceo_pnl_heatmap.png             # CEO P&L summary table
-│   ├── geo_vip.png                     # Geographic VIP concentration
-│   └── eda_*.png                       # EDA overview charts
-│
-│  ── OUTPUT ─────────────────────────────────────────────────────────────────
-├── customer_segmentation_results.csv   # 21,477 customers: cluster + KPIs
-├── models/                             # Trained models (pickle: scaler, reducer, gmm)
-├── requirements.txt                    # Python dependencies
-└── generate_report.py                  # Generates docs/academic_report.pdf
+├── requirements.txt                # Pinned exact dependencies (Python 3.13)
+└── docs/
+    └── Jakala_LUISS.pdf                   # Company brief (reference only)
 ```
 
 ---
@@ -149,65 +158,44 @@ Cluster names are derived from the **statistically dominant feature** of each gr
 
 ```bash
 pip install -r requirements.txt
+mkdir -p src/io/models src/io/assets
+cp /path/to/master_transactions.csv src/io/
 ```
 
 ### Main Notebook
 
 ```bash
-jupyter notebook final_segmentation.ipynb
+jupyter lab master_segmentation.ipynb
 ```
 
-Run cells in order. The notebook imports helper modules from `src/` automatically via `sys.path`.
+Run cells in order. The notebook imports from `src/` automatically. Notebook outputs
+(figures, CSVs, models) are written under `src/io/` (gitignored). Curated final
+figures used by the report live in `assets/` (committed).
 
-**CRISP-DM pipeline (7 phases):**
-
-| Phase | Content |
-|-------|---------|
-| 1 | Data Preparation & Quality (date parsing, NA handling, anomaly removal) |
-| 2 | Advanced EDA (seasonality, Pareto 80/20, email funnel, bivariate analysis) |
-| 3 | Feature Engineering (RFM, discount propensity, email engagement, returns, category mix) |
-| 4 | Dimensionality Reduction with UMAP (3D clustering, 2D visualisation, RobustScaler) |
-| 5 | Clustering: GMM K=6 (BIC elbow + operational cap; DBSCAN/OPTICS rejected) |
-| 6 | Profiling & Business Strategy (persona naming, radar chart, geographic VIP index) |
-| 7 | Financial Modelling (CLV, Revenue at Risk, ROI per strategy, CEO P&L) |
-
-### Generate Academic PDF Report
+### Compile the Report
 
 ```bash
-pip install reportlab
-python generate_report.py
-# Output: docs/academic_report.pdf
+tectonic technical_report.tex
+# Output: technical_report.pdf (at repo root)
 ```
 
 ---
 
 ## Key Dependencies
 
-| Library | Min Version | Usage |
-|---------|:-----------:|-------|
-| pandas | 2.0.0 | Data manipulation |
-| scikit-learn | 1.3.0 | Preprocessing, GMM, metrics |
-| umap-learn | 0.5.5 | Dimensionality reduction |
-| plotly | 5.15.0 | Radar chart, interactive scatter |
-| seaborn / matplotlib | 0.12 / 3.7 | Static visualisations |
-| reportlab | 4.0+ | Academic PDF generation |
+| Library | Version | Usage |
+|---------|:-------:|-------|
+| pandas | 2.3.2 | Data manipulation |
+| scikit-learn | 1.7.2 | Preprocessing, GMM, metrics |
+| umap-learn | 0.5.12 | Dimensionality reduction |
+| plotly | 6.7.0 | Interactive visualisations |
+| seaborn / matplotlib | 0.13.2 / 3.10.6 | Static charts |
+| jupyterlab | 4.4.7 | Notebook environment |
 
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Statistical Validation
-
-| Metric | Result | Interpretation |
-|--------|--------|----------------|
-| Silhouette Score | > 0.20 | Meaningful cluster separation (behavioral data benchmark) |
-| Davies-Bouldin Index | < 1.5 | Compact, well-separated clusters |
-| Calinski-Harabasz | Inflection at K=6 | Confirms elbow in cluster structure curve |
-| GMM Posterior Confidence | > 0.80 average | Genuine structural separation, not random partitioning |
+Python 3.13. See `requirements.txt` for the exact pinned versions used to generate
+the report figures.
 
 ---
 
-*JAKALA × LUISS · Data Science in Action · 2024–2025*  
-*Dataset: 21,477 customers · Mar 2023 – Feb 2025 · Pipeline: CRISP-DM 7 phases · UMAP + GMM · K=6 · Python 3.13*
+*JAKALA × LUISS · Data Science in Action · 2025–2026 · Team: The Hexagon*
+*21,424 customers · Mar 2023 – Feb 2025 · CRISP-DM 6 phases + Financial Extension · UMAP + GMM · K=6 · Python 3.13*

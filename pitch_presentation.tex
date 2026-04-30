@@ -1,0 +1,429 @@
+% pitch_presentation.tex
+% Customer Segmentation for an Italian Fashion Retailer
+% Final Pitch Presentation — LUISS Data Science in Action 2025/26
+% Team: The Hexagon
+%
+% Compile: pdflatex pitch_presentation.tex  (run twice for page numbers)
+%          or: latexmk -pdf pitch_presentation.tex
+
+\documentclass[aspectratio=169,10pt]{beamer}
+
+% ── Theme ─────────────────────────────────────────────────────────────────────
+\usetheme{default}
+\usefonttheme{structurebold}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{eurosym}
+
+% ── Colour scheme (matches technical_report.tex) ──────────────────────────────
+\definecolor{navy}{HTML}{1a1a2e}
+\definecolor{accent}{HTML}{4361ee}
+\definecolor{green}{HTML}{2e7d32}
+
+\setbeamercolor{title}{bg=navy, fg=white}
+\setbeamercolor{subtitle}{fg=white}
+\setbeamercolor{author}{fg=white}
+\setbeamercolor{institute}{fg=white!85}
+\setbeamercolor{date}{fg=white!85}
+\setbeamercolor{frametitle}{bg=navy, fg=white}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{block title}{bg=accent!15, fg=navy}
+\setbeamercolor{block body}{bg=accent!5, fg=black}
+\setbeamercolor{alertblock title}{bg=green!20, fg=green!60!black}
+\setbeamercolor{alertblock body}{bg=green!5, fg=black}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{%
+  \hfill\color{navy}\footnotesize\insertframenumber/\inserttotalframenumber%
+  \hspace{6pt}\vspace{4pt}}
+
+% ── Metadata ──────────────────────────────────────────────────────────────────
+\title{The Hexagon}
+\subtitle{Six Behavioural Profiles for an Italian Fashion Retailer}
+\author{%
+  \textbf{$\langle$Member~1 --- delegate$\rangle$} \quad \textbf{$\langle$Member~2$\rangle$}\\[2pt]
+  \textbf{$\langle$Member~3$\rangle$} \quad \textbf{$\langle$Member~4$\rangle$}%
+}
+\institute{LUISS Guido Carli $\cdot$ Data Science in Action A.Y.\ 2025/26\\
+  in partnership with \textbf{Jakala S.p.A.}}
+\date{May 2026}
+
+% =============================================================================
+\begin{document}
+
+% --- 1. Title slide -----------------------------------------------------------
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+% --- 2. Hook slide ------------------------------------------------------------
+\begin{frame}{\euro12M Revenue. Zero Customer Differentiation.}
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    \begin{block}{The opportunity gap}
+    \small
+    The retailer sends the \textbf{same campaigns} to:\\[4pt]
+    \begin{tabular}{@{}ll@{}}
+      \textbullet\ A VIP buying 5$\times$ in 24 months at \euro957 cumulative & \\
+      \textbullet\ A bargain hunter engaging 3.7$\times$ above average on email & \\
+      \textbullet\ A customer who has not returned in 14 months & \\
+    \end{tabular}\\[6pt]
+    This is not a personalisation problem.\\
+    It is a \textbf{resource allocation problem}.
+    \end{block}
+    \vspace{0.4em}
+    \textbf{Our answer:} identify who your customers actually are,
+    then invest accordingly.
+  \end{column}
+  \begin{column}{0.42\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{assets/eda_pareto.png}\\
+    {\footnotesize Top 20\% of customers $\approx$ 51.2\% of revenue\\
+      (top decile alone: 32.4\%)}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% =============================================================================
+\section{Methodology}
+% =============================================================================
+
+\begin{frame}{Our Approach: CRISP-DM End-to-End Pipeline}
+\centering
+\begin{columns}[c]
+  \begin{column}{0.18\textwidth}\centering
+    \textbf{Data}\\{\small 4 sources\\102K rows\\24 months}
+  \end{column}
+  \begin{column}{0.02\textwidth}\centering$\rightarrow$\end{column}
+  \begin{column}{0.18\textwidth}\centering
+    \textbf{Features}\\{\small 24 variables\\RFM + behaviour\\+ email}
+  \end{column}
+  \begin{column}{0.02\textwidth}\centering$\rightarrow$\end{column}
+  \begin{column}{0.18\textwidth}\centering
+    \textbf{UMAP}\\{\small 3D reduction\\n\_neighbors=30\\non-linear}
+  \end{column}
+  \begin{column}{0.02\textwidth}\centering$\rightarrow$\end{column}
+  \begin{column}{0.18\textwidth}\centering
+    \textbf{GMM K=6}\\{\small full covariance\\10 inits\\seed=42}
+  \end{column}
+  \begin{column}{0.02\textwidth}\centering$\rightarrow$\end{column}
+  \begin{column}{0.18\textwidth}\centering
+    \textbf{Strategy}\\{\small CLV model\\ROI scenarios\\roadmap}
+  \end{column}
+\end{columns}
+
+\vspace{1.0em}
+\begin{columns}[c]
+  \begin{column}{0.3\textwidth}
+    \begin{block}{Why UMAP?}
+    \small Preserves non-linear local structure in behavioural data;
+    better cluster separation than PCA on this manifold.
+    \end{block}
+  \end{column}
+  \begin{column}{0.3\textwidth}
+    \begin{block}{Why GMM?}
+    \small Soft probabilistic assignments; handles elliptical, overlapping
+    clusters; posterior probability = assignment confidence.
+    \end{block}
+  \end{column}
+  \begin{column}{0.3\textwidth}
+    \begin{block}{Why K=6?}
+    \small Four convergent criteria: BIC elbow, Silhouette plateau in $K{\in}[5,8]$,
+    high ARI stability ($0.84$ vs.\ K=7), 96.5\% posterior $>$0.80;
+    operational cap as tie-breaker.
+    \end{block}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% =============================================================================
+\section{Segments}
+% =============================================================================
+
+\begin{frame}{Six Behaviourally Distinct Segments}
+\centering
+\includegraphics[width=0.62\textwidth]{assets/cluster_heatmap.png}
+\hfill
+\includegraphics[width=0.35\textwidth]{assets/umap_space.png}
+\vspace{0.3em}\\
+{\footnotesize
+  Silhouette 0.4188 (bootstrap 0.420$\pm$0.004) $\cdot$ Davies--Bouldin 0.760 $\cdot$
+  Calinski--Harabasz 10{,}975 $\cdot$ GMM confidence (avg) 0.983 (96.5\% $>$0.80)}
+\end{frame}
+
+\begin{frame}{The Active Core: Active Loyalists \& Core Customers}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}Active Loyalists} --- 30.3\%, n=6{,}495
+    \begin{itemize}\small
+      \item Recency 131d, freq 5.0/24mo, monetary \euro957
+      \item AOV \euro195, broad category footprint (4 cats)
+      \item 61.9\% of portfolio dCLV
+    \end{itemize}
+    \textbf{Strategy:} VIP programme + churn-alert at recency $>$90d.\\
+    Investment: \euro45K $\rightarrow$ Uplift: \euro228K (5.1$\times$).
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}Core Customers} --- 47.9\%, n=10{,}256
+    \begin{itemize}\small
+      \item Recency 199d, freq 2.7/24mo $\approx$ 1.36/yr
+      \item Monetary \euro484, AOV \euro192
+      \item Natural feeder pool for the VIP tier
+    \end{itemize}
+    \textbf{Strategy:} gamified loyalty with visible tier-progress.\\
+    Investment: \euro30K $\rightarrow$ Uplift: \euro95K (3.2$\times$).
+  \end{column}
+\end{columns}
+\vspace{0.3em}
+\centering
+\includegraphics[width=0.5\textwidth]{assets/clv_analysis.png}
+\end{frame}
+
+\begin{frame}{The Engaged \& the Lapsed: Promo-Engaged \& One-Shot Shoppers}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}Promo-Engaged} --- 3.6\%, n=768
+    \begin{itemize}\small
+      \item Engagement 0.83 vs.\ portfolio 0.23 (3.7$\times$)
+      \item Discount 14\%; freq 1.98/24mo
+      \item The brand's most reachable segment
+    \end{itemize}
+    \textbf{Strategy:} A/B loyalty-points vs.\ discount offers.\\
+    Investment: \euro20K $\rightarrow$ Uplift: \euro4K (0.2$\times$).\\[2pt]
+    \small\textit{Margin protection, not revenue uplift.}
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}One-Shot Shoppers} --- 12.7\%, n=2{,}727
+    \begin{itemize}\small
+      \item Recency 305d, freq 1.18, n\_categories 1.14
+      \item Monetary \euro115, AOV \euro98
+      \item Bought once, single-category, then gone
+    \end{itemize}
+    \textbf{Strategy:} ``Complete the Look'' cross-sell email at 30/60/90d.\\
+    Investment: \euro20K $\rightarrow$ Uplift: \euro10K (0.5$\times$).
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The Dormant Tail: Lapsed Low-Value \& Churned}
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}Lapsed Low-Value} --- 3.2\%, n=675
+    \begin{itemize}\small
+      \item Recency 315d, freq 1.10
+      \item Monetary \euro148, AOV \euro135
+      \item Low-cost reactivation candidate
+    \end{itemize}
+    \textbf{Strategy:} 3-touch win-back sequence (Day 30/60/90).\\
+    Investment: \euro10K $\rightarrow$ Uplift: \euro5K (0.5$\times$).
+  \end{column}
+  \begin{column}{0.48\textwidth}
+    \textbf{\color{accent}Churned} --- 2.3\%, n=503
+    \begin{itemize}\small
+      \item Recency 306d, freq 1.04
+      \item Monetary \euro128, engagement 0.14
+      \item Smallest cluster; likely lost
+    \end{itemize}
+    \textbf{Strategy:} 2-touch win-back, then suppress.\\
+    Investment: \euro15K $\rightarrow$ Uplift: \euro1K (0.1$\times$).\\[2pt]
+    \small\textit{Strategic value: keep the active list clean.}
+  \end{column}
+\end{columns}
+\end{frame}
+
+% =============================================================================
+\section{Business Implications}
+% =============================================================================
+
+\begin{frame}{From Numbers to Action: What Changes at Jakala}
+\begin{columns}[T]
+  \begin{column}{0.32\textwidth}
+    \begin{block}{Marketing operations}
+    \small
+    \begin{itemize}
+      \item 6 dedicated audiences in CRM (one per cluster)
+      \item Different message frequency by segment (weekly for Promo-Engaged, monthly for Lapsed)
+      \item Active-Loyalist VIP track moves out of mass-mail rotation
+    \end{itemize}
+    \end{block}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \begin{block}{Communication strategy}
+    \small
+    \begin{itemize}
+      \item Editorial $>$ promotional for Active Loyalists \& Core
+      \item Promo-Engaged becomes the A/B testbench for incentive design
+      \item Win-back sequences pre-empt suppression for Lapsed \& Churned
+    \end{itemize}
+    \end{block}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \begin{block}{KPI dashboard}
+    \small
+    \begin{itemize}
+      \item Per-segment retention, AOV, frequency
+      \item VIP attrition early-warning at recency $>$90d
+      \item Promo-Engaged margin per order (not revenue)
+      \item Quarterly silhouette monitoring
+    \end{itemize}
+    \end{block}
+  \end{column}
+\end{columns}
+\vspace{0.4em}
+\centering
+\textbf{\color{accent}One model. Six audiences. Six measurable hypotheses.}
+\end{frame}
+
+% =============================================================================
+\section{Financial Case}
+% =============================================================================
+
+\begin{frame}{Portfolio CLV: \euro16.2M Long-Run Value}
+\begin{columns}[T]
+  \begin{column}{0.52\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{assets/clv_analysis.png}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+    \textbf{Discounted CLV model}\\
+    {\small $\text{dCLV} = \text{AOV}\cdot f \cdot \dfrac{r}{1+d-r}$,\;
+    WACC proxy $d=10\%$}
+
+    \vspace{0.5em}
+    \begin{tabular}{@{}lrr@{}}
+    \toprule
+    \textbf{Segment} & \textbf{dCLV/cust} & \textbf{Share} \\
+    \midrule
+    Active Loyalists  & \euro1{,}545 & 61.9\% \\
+    Core Customers    & \euro545     & 34.5\% \\
+    Promo-Engaged     & \euro310     &  1.5\% \\
+    One-Shot Shoppers & \euro85      &  1.4\% \\
+    Lapsed Low-Value  & \euro106     &  0.4\% \\
+    Churned           & \euro95      &  0.3\% \\
+    \midrule
+    \textbf{Total}    & \multicolumn{2}{r}{\textbf{\euro16{,}187{,}953}} \\
+    \bottomrule
+    \end{tabular}
+    \vspace{0.3em}\\
+    {\footnotesize Managerial reference; not a financial forecast.}
+  \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{ROI Framework: \euro140K Investment $\rightarrow$ \euro342K Uplift}
+\centering
+\includegraphics[width=0.70\textwidth]{assets/roi_framework.png}
+
+\vspace{0.3em}
+\begin{columns}[c]
+  \begin{column}{0.22\textwidth}\centering
+    \textbf{\euro140K}\\{\small annual investment}
+  \end{column}
+  \begin{column}{0.22\textwidth}\centering
+    \textbf{\euro342K}\\{\small projected uplift}
+  \end{column}
+  \begin{column}{0.22\textwidth}\centering
+    \textbf{2.4$\times$}\\{\small portfolio multiple}
+  \end{column}
+  \begin{column}{0.30\textwidth}\centering
+    \textbf{4.3$\times$}\\{\small concentrated (top-2 only)}
+  \end{column}
+\end{columns}
+{\footnotesize\textit{Scenario estimates; all assumptions benchmarked to published literature.
+  Require A/B validation before budgeting.}}
+\end{frame}
+
+% =============================================================================
+\section{Roadmap}
+% =============================================================================
+
+\begin{frame}{Implementation Roadmap}
+\begin{columns}[T]
+  \begin{column}{0.32\textwidth}
+    \textbf{Phase 1 --- Months 1--3 (validate)}
+    \begin{itemize}\small
+      \item Deploy Active-Loyalist VIP programme
+      \item Set up weekly segmentation monitoring dashboard
+      \item Establish A/B test framework with holdout controls
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \textbf{Phase 2 --- Months 4--6 (calibrate)}
+    \begin{itemize}\small
+      \item Read Phase~1 A/B results; update dCLV with empirical retention
+      \item Launch Core-Customers tier-upgrade campaign
+      \item Pilot ``Complete the Look'' for One-Shot Shoppers
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.32\textwidth}
+    \textbf{Phase 3 --- Quarterly}
+    \begin{itemize}\small
+      \item Retrain pipeline on rolling 24-month window
+      \item Trigger early refresh if Silhouette $<$0.34 or distribution drift $>$10\%
+      \item Extend dormant-tail win-back sequences
+    \end{itemize}
+  \end{column}
+\end{columns}
+\vspace{0.6em}
+\begin{block}{Monitoring Trigger}
+\small Refresh segmentation if: (a) segment size distribution drifts $>$10\%,
+(b) Silhouette drops below 0.34, or (c) retailer adds a new product category.
+\end{block}
+\end{frame}
+
+% =============================================================================
+\section{Conclusions}
+% =============================================================================
+
+\begin{frame}{Conclusions \& Limitations}
+\begin{columns}[T]
+  \begin{column}{0.52\textwidth}
+    \textbf{What we found}
+    \begin{itemize}
+      \item Six behaviourally distinct, interpretable segments confirmed
+        by four independent validation criteria (BIC elbow,
+        bootstrap Silhouette, ARI stability, posterior confidence)
+      \item Active Loyalists alone justify the \euro140K investment at 5.1$\times$ return
+      \item Uniform marketing is provably suboptimal: Promo-Engaged
+        and Active Loyalists need opposite levers
+      \item Portfolio dCLV of \euro16.2M anchors investment sizing
+    \end{itemize}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+    \textbf{Honest limitations}
+    \begin{itemize}
+      \item dCLV is a lower bound: right-censored window
+        under-estimates recently acquired customers
+      \item ROI figures are scenario estimates, not forecasts;
+        all behavioural assumptions require A/B validation
+      \item No holdout set: internal validation only
+      \item Operational constraint (6 campaigns/cycle) used as
+        tie-breaker among $K\in[5,8]$, not primary criterion
+    \end{itemize}
+  \end{column}
+\end{columns}
+\vspace{0.5em}
+\centering
+{\large\color{accent}\textbf{The data says: stop averaging, start differentiating.}}
+\end{frame}
+
+% --- Thank you ----------------------------------------------------------------
+\begin{frame}[plain]
+\centering\vspace{1.5cm}
+{\LARGE\color{navy}\textbf{Thank you}}\\[0.6em]
+{\large\color{navy!70} Questions \& Discussion}\\[1.4em]
+{\small
+  \begin{tabular}{ll}
+    $\langle$Member~1 --- delegate$\rangle$ & \texttt{$\langle$email@studenti.luiss.it$\rangle$} \\
+    $\langle$Member~2$\rangle$ & \texttt{$\langle$email@studenti.luiss.it$\rangle$} \\
+    $\langle$Member~3$\rangle$ & \texttt{$\langle$email@studenti.luiss.it$\rangle$} \\
+    $\langle$Member~4$\rangle$ & \texttt{$\langle$email@studenti.luiss.it$\rangle$} \\
+  \end{tabular}
+}\\[1.2em]
+{\footnotesize Fully reproducible via \texttt{master\_segmentation.ipynb} $\cdot$
+  technical\_report.pdf available on request}
+\end{frame}
+
+\end{document}

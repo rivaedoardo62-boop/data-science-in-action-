@@ -2,13 +2,9 @@
 data_processing.py
 ──────────────────
 Single source of truth for all data loading, cleaning, and feature engineering
-for the Jakala × LUISS Customer Segmentation project.
+for the Jakala × LUISS Customer Segmentation project (Team: The Hexagon).
 
-Consolidates logic previously scattered across:
-  - cleaning_data.ipynb   (procedural preprocessing script)
-  - jakala_segmentation_advanced.ipynb  (self-contained feature engineering)
-
-Consumed by: final_segmentation.ipynb
+Consumed by: master_segmentation.ipynb
 
 Data source
 -----------
@@ -19,8 +15,10 @@ master_transactions.csv  —  102,655 transaction lines · 21,480 unique custome
 
 Pipeline output
 ---------------
-build_customer_matrix()  →  1 row per customer · ~32 behavioral features
-get_clustering_features() →  numpy array ready for RobustScaler → UMAP → GMM
+build_customer_matrix()  →  1 row per customer · ~37-column matrix
+get_clustering_features() →  24 clustering features, numpy array ready for
+                              RobustScaler → UMAP → GMM (cells 13–22 in the
+                              master notebook).
 """
 
 from pathlib import Path

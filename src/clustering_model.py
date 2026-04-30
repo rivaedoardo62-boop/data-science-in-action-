@@ -5,7 +5,7 @@ Preprocessing, dimensionality reduction, GMM clustering, evaluation, and
 model persistence for the Jakala × LUISS Customer Segmentation project.
 
 Consumed by:
-  - final_segmentation.ipynb
+  - master_segmentation.ipynb
 """
 
 import pickle
@@ -18,7 +18,9 @@ from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 
 
-# Fixed number of clusters — UMAP + GMM with K=6 is the locked-in configuration.
+# Fixed number of clusters — UMAP + GMM with K=6 is the locked-in configuration
+# for the production segmentation. The K-sweep / bootstrap diagnostics in the
+# master notebook (cells 23–24) are advisory only; they do not change FIXED_K.
 FIXED_K: int = 6
 
 
@@ -84,15 +86,20 @@ def reduce_umap(X_scaled: np.ndarray,
 # ── 2. Clustering ─────────────────────────────────────────────────────────────
 
 def select_k_bic(X: np.ndarray,
-                 k_range: range = range(3, 11),
+                 k_range: range = range(2, 11),
                  n_init: int = 5,
                  seed: int = 42) -> tuple[int, list[float], list[float]]:
     """
-    Select the optimal number of GMM components by minimising BIC.
+    Diagnostic only — sweep BIC/AIC across a range of GMM component counts.
+
+    The production K is FIXED_K (=6); this helper exists to support the K-sweep
+    validation cells of the master notebook and to expose the BIC elbow that
+    motivates the production choice. The returned `k_opt` is informational
+    (the K that minimises BIC) and is NOT used to override FIXED_K.
 
     Returns
     -------
-    k_opt      : optimal cluster count
+    k_opt      : K minimising BIC over k_range (informational)
     bic_scores : BIC for each K in k_range
     aic_scores : AIC for each K in k_range
     """
@@ -147,11 +154,15 @@ def evaluate_clustering(X: np.ndarray,
 # ── 4. Persistence ────────────────────────────────────────────────────────────
 
 def save_model(obj: object, path: str | Path) -> None:
-    """Serialize an object (scaler, reducer, gmm) with pickle."""
+    """Serialize an object (scaler, reducer, gmm) with pickle.
+
+    path must be inside src/io/ — all pipeline outputs go there.
+    """
+    resolved = Path(path)
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "wb") as f:
+    with open(resolved, "wb") as f:
         pickle.dump(obj, f)
-    print(f"Saved: {path}")
+    print(f"Saved: {resolved}")
 
 
 def load_model(path: str | Path) -> object:
