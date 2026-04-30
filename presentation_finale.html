@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Segmentation — JAKALA × LUISS</title>
+<style>
+  :root {
+    --black:  #0D0D0D;
+    --white:  #FFFFFF;
+    --grey:   #F5F5F5;
+    --mid:    #6B7280;
+    --border: #E5E7EB;
+    --c1: #1A1A2E;
+    --c2: #7C3AED;
+    --c3: #2D6A4F;
+    --c4: #B45309;
+    --c5: #1D4ED8;
+    --c6: #6B7280;
+    --accent: #F59E0B;
+    --ds-bg:  #F0F4FF;
+    --ds-border: #C7D2FE;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--grey); color: var(--black); }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--black); color: var(--white);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 40px; font-size: 13px;
+  }
+  nav .brand { font-weight: 700; font-size: 15px; }
+  nav .links { display: flex; gap: 28px; }
+  nav .links a { color: #9CA3AF; text-decoration: none; transition: color .2s; }
+  nav .links a:hover { color: var(--white); }
+
+  /* ── HERO ── */
+  .hero { background: var(--black); color: var(--white); padding: 80px 40px 70px; text-align: center; }
+  .hero .tag {
+    display: inline-block; background: #1F2937; color: #9CA3AF;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 20px; margin-bottom: 28px;
+  }
+  .hero h1 { font-size: clamp(28px,4vw,48px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: #9CA3AF; font-size: 16px; max-width: 700px; margin: 0 auto 48px; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 52px; flex-wrap: wrap; border-top: 1px solid #1F2937; padding-top: 40px; }
+  .hero-stats .stat-value { font-size: 34px; font-weight: 800; color: var(--accent); }
+  .hero-stats .stat-label { font-size: 12px; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  /* ── SHARED SECTION ── */
+  section { padding: 64px 40px; max-width: 1200px; margin: 0 auto; }
+  section h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  section .sub { color: var(--mid); font-size: 14px; margin-bottom: 40px; line-height: 1.6; }
+
+  /* ── METHODOLOGY SECTION ── */
+  .methodology-wrap { background: var(--ds-bg); border-top: 3px solid #6366F1; padding: 64px 0; }
+  .methodology-wrap section { padding-top: 0; padding-bottom: 0; }
+  .methodology-wrap section h2 { color: #3730A3; }
+
+  .method-block { margin-bottom: 52px; padding-bottom: 48px; border-bottom: 1px solid var(--ds-border); }
+  .method-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .method-title {
+    font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+    color: #3730A3; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .method-title::before {
+    content: ''; display: inline-block; width: 4px; height: 20px;
+    background: #6366F1; border-radius: 2px; flex-shrink: 0;
+  }
+  .method-text { font-size: 14px; color: #374151; line-height: 1.7; margin-bottom: 20px; max-width: 860px; }
+  .method-note { font-size: 12px; color: var(--mid); background: #EEF2FF; border: 1px solid var(--ds-border); border-radius: 8px; padding: 12px 16px; margin-top: 16px; line-height: 1.6; max-width: 860px; }
+
+  /* ── PIPELINE STEPS ── */
+  .pipeline-steps {
+    display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0; margin-top: 20px;
+  }
+  .step {
+    background: var(--white); border: 1px solid var(--ds-border); border-radius: 10px;
+    padding: 16px 18px; min-width: 140px; flex: 1; position: relative;
+  }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; background: #6366F1; color: white;
+    border-radius: 50%; font-size: 12px; font-weight: 700; margin-bottom: 8px;
+  }
+  .step-label { display: block; font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 6px; }
+  .step-note { font-size: 11px; color: var(--mid); line-height: 1.5; }
+  .step-arrow { align-self: center; color: #6366F1; font-size: 18px; font-weight: 700; padding: 0 8px; flex-shrink: 0; }
+
+  /* ── FEATURE CARDS ── */
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 16px; margin-top: 20px; }
+  .feat-card { background: var(--white); border: 1px solid var(--ds-border); border-radius: 12px; padding: 20px; }
+  .feat-icon { font-size: 22px; margin-bottom: 10px; }
+  .feat-card h4 { font-size: 13px; font-weight: 700; color: #3730A3; margin-bottom: 8px; }
+  .feat-card p { font-size: 12px; color: var(--mid); line-height: 1.6; }
+
+  /* ── ALGORITHM TABLE ── */
+  .algo-table-wrap { overflow-x: auto; margin-top: 20px; border-radius: 12px; box-shadow: 0 1px 8px rgba(0,0,0,.06); }
+  .algo-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--white); }
+  .algo-table thead tr { background: #1E1B4B; color: var(--white); }
+  .algo-table th { padding: 12px 18px; text-align: left; font-weight: 600; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
+  .algo-table td { padding: 14px 18px; border-bottom: 1px solid var(--ds-border); vertical-align: top; line-height: 1.55; }
+  .algo-table tbody tr:last-child td { border-bottom: none; }
+  .algo-table .selected-row { background: #ECFDF5; }
+  .algo-table .selected-row td { border-bottom: none; }
+  .verdict-yes { display: inline-block; background: #D1FAE5; color: #065F46; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .verdict-no  { display: inline-block; background: #FEE2E2; color: #991B1B; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .verdict-warn { display: inline-block; background: #FEF3C7; color: #92400E; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+  /* ── UMAP EXPLANATION ── */
+  .umap-explain { display: flex; align-items: stretch; gap: 0; margin-top: 20px; border: 1px solid var(--ds-border); border-radius: 12px; overflow: hidden; }
+  .umap-step { flex: 1; background: var(--white); padding: 24px 20px; }
+  .umap-step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6366F1; margin-bottom: 8px; }
+  .umap-step-content { font-size: 13px; color: #374151; line-height: 1.6; }
+  .umap-arrow { display: flex; align-items: center; justify-content: center; background: #EEF2FF; padding: 0 16px; color: #6366F1; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+
+  /* ── K-SELECTION CARDS ── */
+  .k-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 16px; margin-top: 20px; }
+  .k-card { background: var(--white); border: 1px solid var(--ds-border); border-radius: 12px; padding: 22px; }
+  .k-card h4 { font-size: 13px; font-weight: 700; color: #3730A3; margin-bottom: 10px; }
+  .k-card p { font-size: 13px; color: #374151; line-height: 1.65; }
+  .k-card code { display: block; margin-top: 10px; font-family: monospace; font-size: 12px; background: #F5F3FF; color: #4C1D95; padding: 10px 14px; border-radius: 6px; line-height: 1.8; }
+
+  /* ── VALIDATION CARDS ── */
+  .val-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 16px; margin-top: 20px; }
+  .val-card { background: var(--white); border: 1px solid var(--ds-border); border-radius: 12px; padding: 22px; }
+  .val-name { font-size: 14px; font-weight: 700; color: #1E1B4B; margin-bottom: 4px; }
+  .val-range { font-size: 11px; font-weight: 600; color: #6366F1; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+  .val-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  /* ── TRANSITION BANNER ── */
+  .transition-section { background: #1E1B4B; color: var(--white); padding: 72px 40px; text-align: center; }
+  .transition-tag { display: inline-block; background: rgba(99,102,241,.25); color: #A5B4FC; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 20px; margin-bottom: 24px; }
+  .transition-section h2 { font-size: clamp(22px,3vw,36px); font-weight: 800; margin-bottom: 16px; line-height: 1.25; }
+  .transition-section h2 span { color: var(--accent); }
+  .transition-section p { color: #9CA3AF; font-size: 16px; max-width: 640px; margin: 0 auto; line-height: 1.7; }
+
+  /* ── EXEC GRID ── */
+  .exec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 20px; }
+  .exec-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 28px 24px; text-align: center; }
+  .exec-card .val { font-size: 32px; font-weight: 800; }
+  .exec-card .lbl { font-size: 12px; color: var(--mid); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+  .exec-card .note { font-size: 12px; color: var(--mid); margin-top: 8px; line-height: 1.5; }
+
+  /* ── PERSONAS ── */
+  .personas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(520px,1fr)); gap: 28px; }
+  .persona-card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .persona-header { padding: 28px 32px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .persona-header .left h3 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .persona-header .left .desc { font-size: 13px; color: var(--mid); line-height: 1.55; max-width: 340px; }
+  .persona-header .badge { flex-shrink: 0; padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: center; min-width: 110px; }
+  .persona-header .badge .pct { font-size: 22px; font-weight: 800; display: block; }
+  .persona-kpis { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--border); }
+  .kpi-item { padding: 16px 20px; border-right: 1px solid var(--border); }
+  .kpi-item:last-child { border-right: none; }
+  .kpi-item .kval { font-size: 20px; font-weight: 700; }
+  .kpi-item .klbl { font-size: 11px; color: var(--mid); text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+  .kpi-item.alert .kval { color: #DC2626; }
+  .sowhat { padding: 24px 32px; }
+  .sowhat .bullet { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+  .sowhat .bullet:last-child { margin-bottom: 0; }
+  .pill { flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-top: 2px; }
+  .sowhat .bullet .text { font-size: 14px; line-height: 1.55; }
+  .sowhat .bullet .text strong { font-weight: 700; }
+
+  /* Per-persona accent colours */
+  .c1 .persona-header { border-left: 5px solid var(--c1); }
+  .c1 .badge { background:#EEF2FF; color:var(--c1); }
+  .c1 .pill.obj { background:#EEF2FF; color:var(--c1); }
+  .c1 .pill.act { background:#E0E7FF; color:#3730A3; }
+  .c1 .pill.imp { background:#D1FAE5; color:#065F46; }
+  .c2 .persona-header { border-left: 5px solid var(--c2); }
+  .c2 .badge { background:#F5F3FF; color:var(--c2); }
+  .c2 .pill.obj { background:#F5F3FF; color:var(--c2); }
+  .c2 .pill.act { background:#EDE9FE; color:#4C1D95; }
+  .c2 .pill.imp { background:#D1FAE5; color:#065F46; }
+  .c3 .persona-header { border-left: 5px solid var(--c3); }
+  .c3 .badge { background:#ECFDF5; color:var(--c3); }
+  .c3 .pill.obj { background:#ECFDF5; color:var(--c3); }
+  .c3 .pill.act { background:#D1FAE5; color:#065F46; }
+  .c3 .pill.imp { background:#D1FAE5; color:#065F46; }
+  .c4 .persona-header { border-left: 5px solid var(--c4); }
+  .c4 .badge { background:#FFFBEB; color:var(--c4); }
+  .c4 .pill.obj { background:#FFFBEB; color:var(--c4); }
+  .c4 .pill.act { background:#FEF3C7; color:#92400E; }
+  .c4 .pill.imp { background:#D1FAE5; color:#065F46; }
+  .c5 .persona-header { border-left: 5px solid var(--c5); }
+  .c5 .badge { background:#EFF6FF; color:var(--c5); }
+  .c5 .pill.obj { background:#EFF6FF; color:var(--c5); }
+  .c5 .pill.act { background:#DBEAFE; color:#1E40AF; }
+  .c5 .pill.imp { background:#D1FAE5; color:#065F46; }
+  .c6 .persona-header { border-left: 5px solid var(--c6); }
+  .c6 .badge { background:#F9FAFB; color:var(--c6); }
+  .c6 .pill.obj { background:#F9FAFB; color:var(--c6); }
+  .c6 .pill.act { background:#F3F4F6; color:#374151; }
+  .c6 .pill.imp { background:#D1FAE5; color:#065F46; }
+
+  /* ── ROI TABLE ── */
+  .roi-wrap { overflow-x: auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; background:var(--white); border-radius:12px; overflow:hidden; }
+  thead tr { background:var(--black); color:var(--white); }
+  th { padding:14px 18px; text-align:left; font-weight:600; font-size:12px; letter-spacing:.6px; text-transform:uppercase; }
+  td { padding:14px 18px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover { background:#FAFAFA; }
+  .tag-high { display:inline-block; background:#D1FAE5; color:#065F46; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tag-med  { display:inline-block; background:#FEF3C7; color:#92400E; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .tfoot-row td { font-weight:700; background:#F9FAFB; border-top:2px solid var(--border); }
+
+  .note-box { background:#FEF3C7; border:1px solid #FCD34D; border-radius:10px; padding:16px 20px; margin-bottom:32px; font-size:13px; color:#92400E; line-height:1.6; }
+
+  footer { text-align:center; padding:40px; font-size:12px; color:var(--mid); border-top:1px solid var(--border); }
+
+  @media(max-width:768px){
+    .pipeline-steps { flex-direction: column; }
+    .step-arrow { transform: rotate(90deg); padding: 4px 0; align-self: flex-start; margin-left: 16px; }
+    .umap-explain { flex-direction: column; }
+    .umap-arrow { transform: rotate(90deg); padding: 10px 0; }
+    .personas-grid { grid-template-columns: 1fr; }
+    .persona-kpis { grid-template-columns: repeat(2,1fr); }
+    nav .links { display: none; }
+    .hero-stats { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">JAKALA × LUISS — Customer Segmentation</span>
+  <div class="links">
+    <a href="#methodology">Methodology</a>
+    <a href="#profiles">Customer Profiles</a>
+    <a href="#roi">Business Impact</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ HERO -->
+<div class="hero">
+  <div class="tag">Data Science in Action · LUISS / JAKALA · 2025</div>
+  <h1>Customer Intelligence<br>for <span>Italian Fashion Retail</span></h1>
+  <p>An end-to-end data science pipeline — feature engineering, UMAP dimensionality reduction, and Gaussian Mixture Models — applied to 24 months of transactional data, uncovering 6 behaviorally distinct customer profiles with measurable business impact.</p>
+  <div class="hero-stats">
+    <div><div class="stat-value">21,477</div><div class="stat-label">Customers analyzed</div></div>
+    <div><div class="stat-value">102,655</div><div class="stat-label">Raw transactions</div></div>
+    <div><div class="stat-value">32</div><div class="stat-label">Behavioral features</div></div>
+    <div><div class="stat-value">6</div><div class="stat-label">Distinct profiles</div></div>
+    <div><div class="stat-value">€11.96M</div><div class="stat-label">Revenue analyzed</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ DATA SCIENCE METHODOLOGY -->
+<div class="methodology-wrap">
+<section id="methodology">
+  <h2>Data Science Methodology</h2>
+  <p class="sub">How we transformed 102,655 raw transaction lines into 6 actionable customer profiles. Every design decision — from feature selection to algorithm choice to K selection — is documented below.</p>
+
+  <!-- BLOCK 1: Business Question -->
+  <div class="method-block">
+    <h3 class="method-title">The Business Question</h3>
+    <p class="method-text">
+      Starting point: 21,477 customers, 102,655 transactions across 24 months (March 2023 – February 2025), €11.96M in observed revenue. The data exists — but it tells nothing by itself. The question Jakala needed answered was: <strong>do these customers all behave the same, or are there structurally different groups that require different commercial approaches?</strong>
+    </p>
+    <p class="method-text">
+      If distinct groups exist, the company can stop applying a uniform marketing strategy to a non-uniform customer base — and instead allocate budget, messaging, and effort based on actual behavioral differences. The challenge: finding those groups without imposing assumptions about what they should look like.
+    </p>
+  </div>
+
+  <!-- BLOCK 2: Pipeline -->
+  <div class="method-block">
+    <h3 class="method-title">The 7-Phase CRISP-DM Pipeline</h3>
+    <p class="method-text">The project followed the Cross-Industry Standard Process for Data Mining (CRISP-DM), with 7 sequential phases from raw data to financial output:</p>
+    <div class="pipeline-steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <span class="step-label">Data Preparation</span>
+        <span class="step-note">Date parsing · NA handling · one-timer flag · negative-spend audit (~56 anomalous customers removed: return_value &gt; gross_spend)</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <span class="step-label">Advanced EDA</span>
+        <span class="step-note">Seasonality analysis · Pareto 80/20 · email funnel · bivariate distribution analysis</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <span class="step-label">Feature Engineering</span>
+        <span class="step-note">32 behavioral signals aggregated per customer from raw transaction-level data</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <span class="step-label">UMAP</span>
+        <span class="step-note">32D → 3D (clustering) / 2D (visualisation) · RobustScaler · non-linear topology preserved · behavioral sub-groups become spatially separable</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">5</span>
+        <span class="step-label">Clustering</span>
+        <span class="step-note">GMM for main segmentation (K=6, BIC elbow + operational cap ≤6); DBSCAN/OPTICS tested and rejected — hairball problem on uniform-density behavioral data</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">6</span>
+        <span class="step-label">Profiling</span>
+        <span class="step-note">Cluster naming · radar chart comparison · geographic VIP index · behavioral interpretation</span>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <span class="step-num">7</span>
+        <span class="step-label">Financial Modeling</span>
+        <span class="step-note">CLV per segment · Revenue at Risk (3 churn scenarios) · ROI per strategy · CEO P&amp;L table</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3: Feature Engineering -->
+  <div class="method-block">
+    <h3 class="method-title">Feature Engineering — 32 Behavioral Signals</h3>
+    <p class="method-text">
+      Raw data: one row = one transaction line item. Each customer was aggregated into a single behavioral vector of 32 features across 6 dimensions. The principle: every feature must encode a distinct behavioral signal that could meaningfully separate different types of customers.
+    </p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📍</div>
+        <h4>RFM + Monetary</h4>
+        <p>recency_days · frequency · monetary · avg_basket · net_amount · gross_spend · avg_ticket — the classic loyalty signals, extended with net vs. gross spend separation</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🏷️</div>
+        <h4>Price Sensitivity</h4>
+        <p>avg_discount_pct · pct_items_discounted · discounted_tx_rate — quantifies the degree to which each customer is conditioned by promotions</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📧</div>
+        <h4>Email Engagement</h4>
+        <p>nl_open_rate · nl_click_rate · engagement_score (composite index) — measures relationship depth beyond transactions</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔄</div>
+        <h4>Return Behavior</h4>
+        <p>return_rate_tx · return_value · return_count — critical for isolating serial returners, who appear as high-revenue but erode margin</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🛍️</div>
+        <h4>Shopping Patterns</h4>
+        <p>n_categories · ecommerce_share · purchase_frequency_per_month — captures channel preference and product breadth behavior</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">👤</div>
+        <h4>Demographics</h4>
+        <p>age_years · tenure_days · gender · province — used for cluster profiling and geographic VIP index, not for clustering itself</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4: Algorithm Selection -->
+  <div class="method-block">
+    <h3 class="method-title">Algorithm Selection — Why UMAP + GMM?</h3>
+    <p class="method-text">
+      All major clustering families were tested on the actual data. The final choice was not a default — it was the result of systematically ruling out alternatives that failed on this specific dataset:
+    </p>
+    <div class="algo-table-wrap">
+      <table class="algo-table">
+        <thead>
+          <tr>
+            <th>Algorithm</th>
+            <th>Test Result</th>
+            <th>Verdict</th>
+            <th>Why it failed (or was limited)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>K-Means</strong></td>
+            <td>K=4, Silhouette 0.18</td>
+            <td><span class="verdict-no">✗ Rejected</span></td>
+            <td>Assumes spherical, equal-size clusters — violated by behavioral data. Sensitive to outliers. Assigns hard membership with no confidence score. Elbow plot showed no clear separation beyond K=4.</td>
+          </tr>
+          <tr>
+            <td><strong>DBSCAN</strong></td>
+            <td>2 clusters + 56 noise</td>
+            <td><span class="verdict-no">✗ Rejected</span></td>
+            <td>"Hairball problem": customer behavioral data has near-uniform density — no natural density gaps exist. Algorithm collapses 99.7% of customers into one mega-cluster regardless of eps tuning.</td>
+          </tr>
+          <tr>
+            <td><strong>OPTICS</strong></td>
+            <td>1 cluster + 91% noise</td>
+            <td><span class="verdict-no">✗ Rejected</span></td>
+            <td>Same density issue as DBSCAN, despite automatic epsilon detection. 19,783 of 21,428 customers classified as noise (xi=0.05, min_cluster_size=0.05). Unusable at this scale.</td>
+          </tr>
+          <tr>
+            <td><strong>Hierarchical (HC)</strong></td>
+            <td>K=4, Silhouette 0.177</td>
+            <td><span class="verdict-warn">~ Exploratory only</span></td>
+            <td>Computationally viable at N=21K with Ward linkage. Evaluated for K∈{3,4,5,6}. Best silhouette at K=3 (0.180). Useful for initial exploration but dendrogram cut is subjective and hard to justify at this scale.</td>
+          </tr>
+          <tr class="selected-row">
+            <td><strong>UMAP → GMM</strong></td>
+            <td>K=6, confidence &gt;0.80</td>
+            <td><span class="verdict-yes">✓ Selected</span></td>
+            <td>UMAP resolves the density problem by revealing non-linear structure invisible to Euclidean-distance methods. GMM then fits probabilistic ellipsoidal envelopes: each customer receives a cluster confidence score, enabling soft assignment and uncertainty quantification.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BLOCK 5: UMAP -->
+  <div class="method-block">
+    <h3 class="method-title">UMAP — Dimensionality Reduction from 32D to 2D</h3>
+    <p class="method-text">
+      Standard clustering algorithms operate in Euclidean space. On high-dimensional behavioral data (32 features), Euclidean distance becomes unreliable — a phenomenon known as the "curse of dimensionality." UMAP (Uniform Manifold Approximation and Projection) solves this by learning the non-linear manifold structure of the data before clustering.
+    </p>
+    <div class="umap-explain">
+      <div class="umap-step">
+        <div class="umap-step-label">Input</div>
+        <div class="umap-step-content">21,477 customers × 32 behavioral features. Preprocessed with RobustScaler to handle the skewed distributions typical of spending data. High-dimensional space: not directly visualizable.</div>
+      </div>
+      <div class="umap-arrow">→</div>
+      <div class="umap-step">
+        <div class="umap-step-label">UMAP Projection</div>
+        <div class="umap-step-content">Non-linear manifold learning. Constructs a fuzzy topological representation and optimizes a low-dimensional embedding that preserves local neighborhood relationships. Customers who are behaviorally similar end up geometrically close in the 2D projection.</div>
+      </div>
+      <div class="umap-arrow">→</div>
+      <div class="umap-step">
+        <div class="umap-step-label">Output</div>
+        <div class="umap-step-content">2D scatter where 6 visual clouds emerge — each corresponding to a distinct behavioral pattern. GMM is then fitted in UMAP space, placing probability envelopes around each cloud. The result: cluster membership + confidence score per customer.</div>
+      </div>
+    </div>
+    <p class="method-note">Why not PCA? PCA is a linear transformation — it flattens curved behavioral manifolds and loses the non-linear neighborhood structure that defines real customer clusters. UMAP preserves local topology; PCA does not.</p>
+  </div>
+
+  <!-- BLOCK 6: K Selection -->
+  <div class="method-block">
+    <h3 class="method-title">Choosing K — BIC Elbow Detection + Operational Constraint</h3>
+    <p class="method-text">
+      The number of clusters K is not an input to be guessed — it must be derived from the data and validated against business constraints. We used two independent criteria that both converged on K=6:
+    </p>
+    <div class="k-cards">
+      <div class="k-card">
+        <h4>Problem: Pure BIC Minimization Fails</h4>
+        <p>Bayesian Information Criterion (BIC) penalizes model complexity to prevent overfitting. On continuous behavioral data, however, BIC can decrease monotonically as K increases. Running <code>K = argmin(BIC)</code> on our data returned K=10 — producing 4 clusters all labeled "one-timer" and 2 labeled "mid-tier." Statistical optimization without judgment is not a solution.</p>
+      </div>
+      <div class="k-card">
+        <h4>Fix: BIC Elbow Detection</h4>
+        <p>Instead of the global minimum, we detect the <strong>last inflection point</strong> — the K where the marginal BIC improvement drops below a threshold relative to the first big drop:</p>
+        <code>drops = [BIC[k-1] - BIC[k] for k in K_range]<br>threshold = 0.20 × drops[0]<br>K_elbow = last k where drop ≥ threshold</code>
+        <p style="margin-top:10px; font-size:12px; color:var(--mid);">Beyond this point, adding clusters captures noise rather than genuine behavioral differences.</p>
+      </div>
+      <div class="k-card">
+        <h4>Validation: Operational Cap K ≤ 6</h4>
+        <p>A statistically valid K=10 segmentation is commercially unworkable. Industry benchmark: beyond 6 distinct segments, a marketing team cannot design, execute, budget, and measure genuinely different campaigns for each group. K=6 satisfies both the BIC elbow criterion and this operational constraint — a convergence that validates the choice from two independent angles.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCK 7: Validation -->
+  <div class="method-block">
+    <h3 class="method-title">Statistical Validation of the Final Model</h3>
+    <p class="method-text">
+      The final K=6 GMM solution was evaluated using four complementary metrics. No single metric is sufficient — each measures a different aspect of cluster quality:
+    </p>
+    <div class="val-grid">
+      <div class="val-card">
+        <div class="val-name">Silhouette Score</div>
+        <div class="val-range">Range: [−1, 1] · Higher is better</div>
+        <div class="val-desc">For each customer, measures how similar they are to their own cluster vs. the nearest neighboring cluster. A score above 0.2 indicates meaningful separation between groups — not just arbitrary partitioning.</div>
+      </div>
+      <div class="val-card">
+        <div class="val-name">Davies-Bouldin Index</div>
+        <div class="val-range">Range: [0, ∞] · Lower is better</div>
+        <div class="val-desc">Computes the average ratio of within-cluster scatter to between-cluster separation for each cluster pair. Low values indicate compact clusters that are far apart — the ideal configuration for marketing segmentation.</div>
+      </div>
+      <div class="val-card">
+        <div class="val-name">Calinski-Harabasz Index</div>
+        <div class="val-range">Higher is better · No upper bound</div>
+        <div class="val-desc">Ratio of between-cluster dispersion to within-cluster dispersion. High values indicate dense, well-separated clusters. Evaluated across K=3 to K=10 to confirm K=6 as an inflection point in the curve.</div>
+      </div>
+      <div class="val-card">
+        <div class="val-name">GMM Posterior Confidence</div>
+        <div class="val-range">Per-customer probability score</div>
+        <div class="val-desc">Each customer receives a posterior probability for cluster membership (0 to 1). Average confidence above 0.80 across all 6 clusters confirms that the GMM found genuine structure — not random partitions with ambiguous boundaries.</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+</div><!-- end methodology-wrap -->
+
+<!-- ══════════════════════════════════════════════ TRANSITION BANNER -->
+<div class="transition-section">
+  <div class="transition-tag">From algorithm to insight</div>
+  <h2>What does this customer base<br><span>actually look like?</span></h2>
+  <p>The model found 6 statistically distinct behavioral groups. Below is the interpretation layer: who these customers are, what drives their behavior, and — most critically — what the business should do differently for each of them.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════ KEY FINDINGS SUMMARY -->
+<section id="findings">
+  <h2>Key Findings at a Glance</h2>
+  <p class="sub">Before diving into each profile, these are the headline insights that the segmentation revealed — signals that would be invisible in aggregate data.</p>
+  <div class="exec-grid">
+    <div class="exec-card">
+      <div class="val" style="color:#1A1A2E">€5.1M</div>
+      <div class="lbl">Revenue from top 25%</div>
+      <div class="note">5,500 customers (The Inner Circle) generate 42.8% of total revenue — extreme concentration risk</div>
+    </div>
+    <div class="exec-card">
+      <div class="val" style="color:#DC2626">33%</div>
+      <div class="lbl">Return rate — Quality Seekers</div>
+      <div class="note">1,113 high-spend customers return 1 in 3 items — the hidden margin leak the model uncovered</div>
+    </div>
+    <div class="exec-card">
+      <div class="val" style="color:#7C3AED">29.1%</div>
+      <div class="lbl">One-time buyer rate</div>
+      <div class="note">6,258 customers bought exactly once in 24 months and disappeared — the largest untapped opportunity</div>
+    </div>
+    <div class="exec-card">
+      <div class="val" style="color:#B45309">74.6%</div>
+      <div class="lbl">Transactions on discount</div>
+      <div class="note">One entire segment buys almost exclusively on promotion — systematic margin erosion if not addressed</div>
+    </div>
+    <div class="exec-card">
+      <div class="val" style="color:#065F46">€718K</div>
+      <div class="lbl">Expected uplift / yr</div>
+      <div class="note">Combined impact of all 6 targeted strategies, based on conservative conversion assumptions</div>
+    </div>
+    <div class="exec-card">
+      <div class="val" style="color:#F59E0B">€15.3M</div>
+      <div class="lbl">Estimated portfolio CLV</div>
+      <div class="note">Present value of future expected cash flows — discounted CLV across all 6 segments</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ 6 CUSTOMER PROFILES -->
+<section id="profiles">
+  <h2>The 6 Customer Profiles</h2>
+  <p class="sub">
+    Each profile is derived from the actual behavioral averages of its cluster members — no assumptions, no guesswork. KPIs are real aggregates from <code>customer_segmentation_results.csv</code>.<br>
+    The "So What?" framework translates each behavioral pattern into a concrete commercial decision.
+  </p>
+
+  <div class="note-box">
+    <strong>Note on cluster consolidation:</strong> The initial model produced 10 groups. Four clusters (2, 3, 6, 8) shared overlapping behavioral profiles — low frequency, high inactivity, low average spend — and were consolidated into <strong>Dormant Potential</strong>. Two mid-tier clusters (0, 9) with near-identical KPIs were merged into <strong>Rising Stars</strong>. Merging was based on feature-space proximity confirmed by pairwise Euclidean distance in UMAP coordinates. The result: 6 genuinely distinct segments, each requiring a different marketing lever.
+  </div>
+
+  <div class="personas-grid">
+
+    <!-- 1. THE INNER CIRCLE -->
+    <div class="persona-card c1">
+      <div class="persona-header">
+        <div class="left">
+          <h3>💎 The Inner Circle</h3>
+          <p class="desc">The retailer's premium customers. They buy frequently, at full price, and return within 4 months. They represent the most concentrated revenue risk: losing 5% of them costs more than acquiring 500 new customers.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">25.6%</span>
+          <span>5,500 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">42.8% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€932</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">133 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">5.0×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">5%</div><div class="klbl">One-timers</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Protect revenue concentration.</strong> 42.8% of total revenue depends on this group. A 5pp churn reduction here outperforms any acquisition campaign.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>"Black Card" VIP Program:</strong> exclusive early access to new collections (72h before public), dedicated personal shopper, platinum loyalty tier, predictive churn alert triggered at 120 days of inactivity.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€256K/yr</strong> in protected revenue: reducing annual churn from 16% to 11% on 5,500 customers × €932 avg. spend. Investment payback: 3.2 months.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. QUALITY SEEKERS -->
+    <div class="persona-card c2">
+      <div class="persona-header">
+        <div class="left">
+          <h3>🔄 Quality Seekers</h3>
+          <p class="desc">High spenders and frequent buyers — but they return 1 in 3 items. This is the model's most important discovery: a segment that looks like VIP on revenue but is silently eroding margin. They use the store as a fitting room.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">5.2%</span>
+          <span>1,113 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">7.6% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€816</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">176 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">4.3×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item alert"><div class="kval">33%</div><div class="klbl">Return rate ⚠️</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Cut the 33% return rate to below 20%</strong> without losing purchase frequency. These customers buy right but return because of size/fit uncertainty, not dissatisfaction.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>Fit intelligence tools:</strong> AI-powered size advisor on PDPs, detailed fit guides by category (especially outerwear and suits — highest-return sub-categories), virtual try-on for e-commerce, return cost transparency at checkout.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€70K/yr</strong> in recovered margin: reducing return rate by 13pp on 1,113 customers × 4.33 purchases × €190 avg. basket. Secondary: reduced logistics and restocking costs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. STYLE EXPLORERS -->
+    <div class="persona-card c3">
+      <div class="persona-header">
+        <div class="left">
+          <h3>🛍️ Style Explorers</h3>
+          <p class="desc">They naturally shop across categories in the same season. They don't need to be convinced to buy more — they just need to be guided toward adjacent products they haven't discovered yet. The cross-sell opportunity is already latent.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">15.6%</span>
+          <span>3,353 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">13.7% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€489</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">194 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">3.1×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">2%</div><div class="klbl">Return rate</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Increase average categories per order from 2.1 to 2.6.</strong> Each additional category generates ~€100 of incremental revenue per visit.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>"Complete the Look" engine:</strong> personalised recommendation in post-purchase email and at checkout, based on category just purchased. Bundle pricing on full outfits with 10% incentive on the second category.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€73K/yr:</strong> 20% cross-sell conversion (670 customers) × €109 avg. incremental basket. KPI: avg categories per order, cross-category conversion rate.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. DEAL CHASERS -->
+    <div class="persona-card c4">
+      <div class="persona-header">
+        <div class="left">
+          <h3>🏷️ Deal Chasers</h3>
+          <p class="desc">They buy expensive items (€249 avg. basket) but only when there's a discount. 74.6% of their transactions involve a promotion. The risk: systematic discounting trains them never to pay full price, eroding margin on the retailer's highest-ticket items.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">14.2%</span>
+          <span>3,044 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">11.9% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€467</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">260 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">€249</div><div class="klbl">Avg. basket</div></div>
+        <div class="kpi-item alert"><div class="kval">74.6%</div><div class="klbl">Discount rate ⚠️</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Shift 20% of purchases from discounted to full-price</strong> without losing purchase frequency. Break discount conditioning — the customer must perceive value without the percentage off.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>A/B test on two groups:</strong> Control (classic 20% discount email) vs. Treatment (editorial content on new collection + loyalty points instead of %). Flash sales on unexplored categories to trigger full-price purchase in new product areas.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€89K/yr gross margin:</strong> 609 customers (20% of segment) shifting one annual purchase from discounted to full-price × €249 avg. basket × 15% margin recovery. Highest margin at risk if not addressed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. RISING STARS -->
+    <div class="persona-card c5">
+      <div class="persona-header">
+        <div class="left">
+          <h3>🌱 Rising Stars</h3>
+          <p class="desc">The largest segment at 28.3% of the customer base. Regular buyers with stable behaviour, not yet premium. The natural feeder pool for The Inner Circle — with the right nudge, 1 in 20 can make the jump. Low-cost, high-upside segment.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">28.3%</span>
+          <span>6,082 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">20.2% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€397</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">203 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">2.5×</div><div class="klbl">Avg. frequency</div></div>
+        <div class="kpi-item"><div class="kval">28%</div><div class="klbl">One-timers</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Accelerate tier upgrade toward The Inner Circle.</strong> A customer moving from €397 to €932 in annual spend generates a CLV uplift of +€534 — with zero acquisition cost.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>Loyalty gamification:</strong> personalised "You're €X away from Silver status" message. Seasonal editorial newsletter (non-promotional) to increase brand affinity. Local event invitations (pop-up stores, preview openings) to build physical brand connection.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€162K/yr CLV uplift:</strong> 5% upgrade rate (304 customers) × €534 average spend delta. Every 1pp improvement in upgrade rate is worth +€32K in annual revenue.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. DORMANT POTENTIAL -->
+    <div class="persona-card c6">
+      <div class="persona-header">
+        <div class="left">
+          <h3>👋 Dormant Potential</h3>
+          <p class="desc">76% bought only once and never came back. Last purchase: 290 days ago on average. They didn't complain, didn't unsubscribe — they simply went silent. Some (the email-engaged sub-group) still open newsletters but don't convert. The reactivation window is closing.</p>
+        </div>
+        <div class="badge">
+          <span class="pct">11.1%</span>
+          <span>2,385 customers</span>
+          <div style="margin-top:4px;font-size:11px;opacity:.8">3.8% of revenue</div>
+        </div>
+      </div>
+      <div class="persona-kpis">
+        <div class="kpi-item"><div class="kval">€189</div><div class="klbl">Avg. spend</div></div>
+        <div class="kpi-item"><div class="kval">290 days</div><div class="klbl">Since last purchase</div></div>
+        <div class="kpi-item"><div class="kval">76%</div><div class="klbl">One-timers</div></div>
+        <div class="kpi-item"><div class="kval">0.32</div><div class="klbl">Engagement score</div></div>
+      </div>
+      <div class="sowhat">
+        <div class="bullet">
+          <span class="pill obj">Objective</span>
+          <div class="text"><strong>Generate a second purchase within 90 days</strong> before permanent churn (365+ days of inactivity). Even a 15% reactivation rate is a concrete revenue recovery opportunity.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill act">Action</span>
+          <div class="text"><strong>3-step win-back sequence:</strong> Day 30 — "How is your [purchased category]?" + complementary suggestion. Day 60 — 10% voucher expiring in 15 days. Day 90 — "Last chance" + flash offer. Email-engaged sub-group: higher-frequency editorial content instead of discounts — they read, just don't convert.</div>
+        </div>
+        <div class="bullet">
+          <span class="pill imp">Impact</span>
+          <div class="text"><strong>+€68K/yr:</strong> 15% reactivation on 2,385 customers → 358 reactivated × €189 avg. spend. Campaign cost: ~€8K. Net: +€60K. KPI: 2nd purchase rate at 90 and 180 days post-campaign.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ BUSINESS IMPACT -->
+<section id="roi">
+  <h2>Business Impact &amp; ROI by Profile</h2>
+  <p class="sub">Aggregate financial summary — all strategies, one document. Investment figures are annual operating costs for CRM, automation, and content production per segment.</p>
+  <div class="roi-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Profile</th>
+          <th>Customers</th>
+          <th>Base Revenue</th>
+          <th>Investment / yr</th>
+          <th>Expected Uplift</th>
+          <th>Net ROI</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>💎 The Inner Circle</strong></td>
+          <td>5,500</td>
+          <td>€5,125,450</td>
+          <td>€45,000</td>
+          <td>+€256,000</td>
+          <td><strong>5.7×</strong></td>
+          <td><span class="tag-high">CRITICAL</span></td>
+        </tr>
+        <tr>
+          <td><strong>🌱 Rising Stars</strong></td>
+          <td>6,082</td>
+          <td>€2,415,770</td>
+          <td>€30,000</td>
+          <td>+€162,000</td>
+          <td><strong>5.4×</strong></td>
+          <td><span class="tag-high">HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>🛍️ Style Explorers</strong></td>
+          <td>3,353</td>
+          <td>€1,638,611</td>
+          <td>€20,000</td>
+          <td>+€73,000</td>
+          <td><strong>3.7×</strong></td>
+          <td><span class="tag-high">HIGH</span></td>
+        </tr>
+        <tr>
+          <td><strong>🏷️ Deal Chasers</strong></td>
+          <td>3,044</td>
+          <td>€1,422,461</td>
+          <td>€20,000</td>
+          <td>+€89,000</td>
+          <td><strong>4.5×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>🔄 Quality Seekers</strong></td>
+          <td>1,113</td>
+          <td>€908,431</td>
+          <td>€15,000</td>
+          <td>+€70,000</td>
+          <td><strong>4.7×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><strong>👋 Dormant Potential</strong></td>
+          <td>2,385</td>
+          <td>€451,004</td>
+          <td>€10,000</td>
+          <td>+€68,000</td>
+          <td><strong>6.8×</strong></td>
+          <td><span class="tag-med">MEDIUM</span></td>
+        </tr>
+        <tr class="tfoot-row">
+          <td><strong>TOTAL PORTFOLIO</strong></td>
+          <td><strong>21,477</strong></td>
+          <td><strong>€11,961,727</strong></td>
+          <td><strong>€140,000</strong></td>
+          <td><strong>+€718,000</strong></td>
+          <td><strong>5.1×</strong></td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  JAKALA × LUISS — Data Science in Action · 2025 &nbsp;·&nbsp;
+  Dataset: 21,477 customers, Mar 2023 – Feb 2025 &nbsp;·&nbsp;
+  Pipeline: CRISP-DM 7 phases · UMAP + GMM · K=6 · Python 3.13
+</footer>
+
+</body>
+</html>
